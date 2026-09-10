@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Twelve roadmaps — beginner to expert</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0A0C;
+  --surface:rgba(255,255,255,0.028);
+  --surface-2:rgba(255,255,255,0.045);
+  --line:rgba(255,255,255,0.075);
+  --line-2:rgba(255,255,255,0.13);
+  --ink:#F4F3F1;
+  --ink-2:#A8A69F;
+  --ink-3:#6F6D67;
+  --radius:14px;
+  --measure:60ch;
+  --font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);
+  font-size:15px;line-height:1.6;font-feature-settings:"cv05","ss01";
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;}
+
+/* ambient: one restrained wash, plus a hairline grid */
+.glow{position:fixed;top:-40vmax;left:50%;transform:translateX(-50%);
+  width:140vmax;height:80vmax;z-index:0;pointer-events:none;opacity:.5;
+  background:radial-gradient(50% 50% at 50% 50%, rgba(120,112,214,0.16), rgba(44,190,143,0.06) 45%, transparent 70%);
+  filter:blur(20px);animation:sway 40s ease-in-out infinite alternate;}
+@keyframes sway{from{transform:translateX(-52%) scale(1);}to{transform:translateX(-48%) scale(1.06);}}
+.grain{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(rgba(255,255,255,.014) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.014) 1px,transparent 1px);
+  background-size:56px 56px;
+  mask-image:radial-gradient(80% 60% at 50% 0%,#000,transparent 75%);}
+
+/* top bar */
+.topbar{position:sticky;top:0;z-index:40;border-bottom:1px solid var(--line);
+  background:rgba(10,10,12,0.72);backdrop-filter:saturate(150%) blur(14px);}
+.tinner{max-width:1440px;margin:0 auto;padding:0 32px;height:58px;
+  display:flex;align-items:center;gap:26px;}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);
+  font-size:13.5px;font-weight:600;letter-spacing:-0.1px;white-space:nowrap;}
+.mark{width:18px;height:18px;border-radius:5px;flex:0 0 auto;
+  background:linear-gradient(135deg,#8F86F0,#2CBE8F 55%,#E2703F);
+  box-shadow:0 0 0 1px rgba(255,255,255,.14) inset;}
+.navlinks{display:flex;gap:2px;}
+.navlinks a{font-size:13px;text-decoration:none;color:var(--ink-3);padding:7px 13px;
+  border-radius:8px;transition:.18s;}
+.navlinks a:hover{color:var(--ink);background:var(--surface-2);}
+.navlinks a.on{color:var(--ink);background:var(--surface-2);font-weight:500;}
+.status{margin-left:auto;font-size:12px;color:var(--ink-3);display:flex;align-items:center;gap:8px;white-space:nowrap;}
+.led{width:6px;height:6px;border-radius:50%;background:#2CBE8F;box-shadow:0 0 8px #2CBE8F;flex:0 0 auto;}
+.led.warn{background:#D9A036;box-shadow:0 0 8px #D9A036;}
+.led.cloud{background:#8F86F0;box-shadow:0 0 8px #8F86F0;}
+
+.wrap{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:0 32px 110px;}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:48px;align-items:end;
+  padding:64px 0 34px;border-bottom:1px solid var(--line);}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:1.9px;text-transform:uppercase;
+  color:var(--ink-3);margin-bottom:16px;animation:rise .7s cubic-bezier(.2,.7,.3,1) both;}
+h1{font-size:clamp(28px,3.3vw,42px);font-weight:600;letter-spacing:-1px;line-height:1.12;
+  margin:0 0 16px;animation:rise .7s .05s cubic-bezier(.2,.7,.3,1) both;}
+.lede{font-size:16px;color:var(--ink-2);margin:0;max-width:var(--measure);line-height:1.65;
+  animation:rise .7s .1s cubic-bezier(.2,.7,.3,1) both;}
+@keyframes rise{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+.stats{display:flex;gap:34px;padding-bottom:5px;animation:rise .7s .16s cubic-bezier(.2,.7,.3,1) both;}
+.stat b{display:block;font-size:26px;font-weight:600;letter-spacing:-0.6px;line-height:1.1;
+  font-variant-numeric:tabular-nums;}
+.stat span{display:block;font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--ink-3);margin-top:5px;}
+
+/* controls */
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:26px;}
+input,select,textarea{font-family:inherit;font-size:13.5px;color:var(--ink);
+  background:var(--surface-2);border:1px solid var(--line);border-radius:9px;
+  padding:9px 12px;outline:none;transition:.18s;}
+input::placeholder{color:var(--ink-3);}
+input:focus,select:focus,textarea:focus{border-color:var(--line-2);background:rgba(255,255,255,.06);}
+select option{background:#141416;color:var(--ink);}
+input[type=search]{flex:1;min-width:220px;}
+button{font-family:inherit;font-size:13.5px;border-radius:9px;padding:9px 14px;cursor:pointer;
+  border:1px solid var(--line);background:var(--surface-2);color:var(--ink-2);transition:.18s;}
+button:hover{color:var(--ink);border-color:var(--line-2);}
+button.primary{background:var(--ink);color:#0A0A0C;border-color:var(--ink);font-weight:600;}
+button.primary:hover{background:#fff;}
+button.ghost{background:none;border-color:transparent;padding:5px 8px;color:var(--ink-3);}
+button.ghost:hover{color:var(--ink);background:var(--surface-2);}
+.pills{display:flex;gap:4px;flex-wrap:wrap;background:var(--surface);padding:3px;border-radius:11px;border:1px solid var(--line);}
+.pill{font-size:12.5px;padding:6px 12px;border-radius:8px;border:1px solid transparent;
+  background:none;cursor:pointer;color:var(--ink-3);transition:.18s;}
+.pill:hover{color:var(--ink);}
+.pill.on{background:var(--surface-2);color:var(--ink);border-color:var(--line);font-weight:500;}
+
+.addbox{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px;margin-top:12px;display:none;}
+.addbox.open{display:block;animation:rise .3s cubic-bezier(.2,.7,.3,1) both;}
+.grid5{display:grid;grid-template-columns:2fr 2fr 1.3fr 1fr 1fr;gap:8px;margin-bottom:8px;}
+.row2{display:flex;gap:8px;}.row2 input{flex:1;}
+
+.summary{display:flex;gap:22px;flex-wrap:wrap;align-items:center;padding:14px 18px;margin-top:14px;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  font-size:13px;color:var(--ink-2);}
+.summary b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums;}
+.track{flex:1;min-width:170px;height:5px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden;}
+.track i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#8F86F0,#2CBE8F);
+  transition:width .6s cubic-bezier(.2,.7,.3,1);}
+
+/* sticky level headings */
+.levels{display:grid;grid-template-columns:196px repeat(3,1fr);gap:16px;margin:38px 0 0;
+  position:sticky;top:58px;z-index:20;padding:14px 0 12px;
+  background:linear-gradient(to bottom,var(--bg) 68%,transparent);}
+.lv{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-2);}
+.lv span{display:block;font-weight:400;font-size:12px;letter-spacing:0;text-transform:none;
+  color:var(--ink-3);margin-top:4px;}
+
+/* sections */
+section{margin-top:40px;}
+.cat{display:flex;align-items:center;gap:14px;margin:0 0 20px;}
+.cat b{font-size:11px;font-weight:600;letter-spacing:1.9px;text-transform:uppercase;color:var(--accent);}
+.cat i{font-style:normal;font-size:12.5px;color:var(--ink-3);white-space:nowrap;}
+.cat .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--accent-line),transparent);}
+
+/* rows */
+.row{display:grid;grid-template-columns:196px repeat(3,1fr);gap:16px;margin-bottom:16px;perspective:1600px;}
+.label{padding-top:2px;}
+.chip{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:600;color:#fff;background:var(--accent);
+  font-variant-numeric:tabular-nums;
+  box-shadow:0 4px 14px -6px var(--accent), inset 0 1px 0 rgba(255,255,255,.25);
+  transition:transform .3s cubic-bezier(.2,.7,.3,1);}
+.row:hover .chip{transform:translateY(-2px);}
+.label h3{font-size:15.5px;font-weight:600;margin:13px 0 4px;line-height:1.3;letter-spacing:-0.2px;}
+.label p{font-size:12px;color:var(--ink-3);margin:0 0 10px;line-height:1.45;}
+.mini{width:70px;height:4px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden;}
+.mini i{display:block;height:100%;background:var(--accent);transition:width .5s;}
+.label .n{font-size:11px;color:var(--ink-3);margin-top:6px;display:block;font-variant-numeric:tabular-nums;}
+
+/* cards */
+.card{position:relative;border-radius:var(--radius);padding:16px 16px 14px;
+  background:var(--surface);border:1px solid var(--line);transform-style:preserve-3d;overflow:hidden;
+  box-shadow:0 1px 0 rgba(255,255,255,.03) inset;
+  transition:transform .3s cubic-bezier(.2,.7,.3,1), box-shadow .3s, border-color .3s, background .3s;
+  opacity:0;}
+.row.in .card{animation:cardIn .55s cubic-bezier(.2,.7,.3,1) both;animation-delay:calc(var(--i) * 80ms);}
+@keyframes cardIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+.card::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;
+  background:radial-gradient(240px 240px at var(--mx,50%) var(--my,50%), rgba(255,255,255,.055), transparent 65%);}
+.card:hover{background:var(--surface-2);border-color:var(--accent-line);
+  box-shadow:0 1px 0 rgba(255,255,255,.05) inset, 0 20px 40px -30px rgba(0,0,0,1);}
+.card:hover::after{opacity:1;}
+
+.bars{display:flex;gap:3px;margin-bottom:13px;}
+.bars i{height:2px;border-radius:2px;background:rgba(255,255,255,.1);flex:1;transform-origin:left;}
+.bars i.on{background:var(--accent);opacity:.85;}
+
+/* roadmap card body */
+.card ul{list-style:none;margin:0 0 14px;padding:0;}
+.card li{position:relative;padding-left:15px;font-size:13.5px;line-height:1.5;color:#DEDCD7;margin-bottom:8px;}
+.card li::before{content:"";position:absolute;left:0;top:8px;width:4px;height:4px;border-radius:50%;background:var(--accent);opacity:.8;}
+.src{border-radius:10px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.045);padding:11px 12px;}
+.src a,.src span{display:block;font-size:11.5px;line-height:1.6;color:var(--ink-3);text-decoration:none;
+  word-break:break-word;transition:.18s;}
+.src a:hover{color:var(--accent-text);}
+
+/* library card body */
+.item{display:flex;align-items:flex-start;gap:9px;padding:7px 0;position:relative;z-index:2;}
+.item+.item{border-top:1px solid rgba(255,255,255,.045);}
+.box{width:15px;height:15px;border-radius:4px;border:1.5px solid rgba(255,255,255,.22);
+  cursor:pointer;flex:0 0 auto;margin-top:3px;position:relative;transition:.15s;}
+.box:hover{border-color:var(--accent);}
+.box.on{background:var(--accent);border-color:var(--accent);}
+.box.on::after{content:"";position:absolute;left:4px;top:.5px;width:4px;height:8.5px;
+  border:solid #fff;border-width:0 2px 2px 0;transform:rotate(42deg);}
+.meta{flex:1;min-width:0;}
+.meta a,.meta span.t{font-size:13px;line-height:1.5;color:#DEDCD7;text-decoration:none;word-break:break-word;transition:.18s;}
+.meta a:hover{color:var(--accent-text);}
+.item.done .meta a,.item.done .meta span.t{color:var(--ink-3);text-decoration:line-through;}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px;}
+.tag{font-size:10px;letter-spacing:.4px;padding:2px 7px;border-radius:5px;background:rgba(255,255,255,.06);color:var(--ink-3);}
+.tag.mine{background:var(--accent-line);color:var(--accent-text);}
+.note{font-size:11.5px;color:var(--ink-2);margin-top:4px;font-style:italic;}
+.star{font-size:13px;line-height:1;color:rgba(255,255,255,.14);background:none;border:none;padding:3px;cursor:pointer;transition:.18s;}
+.star:hover{color:rgba(255,255,255,.45);}
+.star.on{color:#D9A036;}
+.none{font-size:12px;color:var(--ink-3);padding:5px 0;}
+
+/* overlays */
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(16px);z-index:60;
+  background:#F4F3F1;color:#0A0A0C;padding:10px 18px;border-radius:9px;font-size:13px;font-weight:500;
+  opacity:0;pointer-events:none;transition:.22s;box-shadow:0 20px 40px -20px rgba(0,0,0,.9);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+dialog{border:1px solid var(--line-2);border-radius:16px;padding:24px;max-width:680px;width:92%;
+  background:#141416;color:var(--ink);box-shadow:0 40px 80px -30px rgba(0,0,0,1);}
+dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(2px);}
+dialog h3{margin:0 0 12px;font-size:17px;font-weight:600;letter-spacing:-0.3px;}
+dialog p{font-size:13px;color:var(--ink-2);margin:0 0 12px;line-height:1.65;}
+dialog ol{font-size:13px;color:var(--ink-2);line-height:1.75;padding-left:20px;margin:0 0 14px;}
+dialog code{background:rgba(255,255,255,.07);padding:1px 6px;border-radius:4px;font-size:12px;}
+dialog textarea{width:100%;height:290px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;line-height:1.55;}
+dialog input{width:100%;margin-bottom:8px;}
+dialog .status{margin:0 0 14px;font-size:12.5px;padding:10px 12px;border-radius:9px;
+  background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);display:block;}
+.dlgbtns{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap;}
+
+footer{margin-top:70px;padding-top:26px;border-top:1px solid var(--line);
+  font-size:12.5px;color:var(--ink-3);line-height:1.75;max-width:var(--measure);}
+
+@media(max-width:1000px){
+  .levels{display:none;}
+  .row{grid-template-columns:1fr;gap:10px;}
+  .label{padding-top:8px;}
+  .hero{grid-template-columns:1fr;gap:26px;padding:40px 0 28px;}
+  .stats{gap:26px;}
+  .tinner,.wrap{padding-left:18px;padding-right:18px;}
+  .grid5{grid-template-columns:1fr 1fr;}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}.card{opacity:1!important;}}
+</style>
+</head>
+<body>
+<div class="glow"></div><div class="grain"></div>
+
+<div class="topbar"><div class="tinner">
+  <a class="brand" href="./index.html"><span class="mark"></span>Knowledge Management System</a>
+  <nav class="navlinks">
+    <a class="on" href="./index.html">Roadmap</a>
+    <a class="" href="./library.html">Library</a>
+  </nav>
+  <div class="status">12 tracks &middot; 108 free sources</div>
+</div></div>
+
+<div class="wrap">
+
+<div class="hero">
+  <div>
+    <div class="eyebrow">Learning system</div>
+    <h1>Twelve roadmaps,<br>beginner to expert</h1>
+    <p class="lede">One lane per skill, grouped by what the skill is actually for. Every source listed is free. Run two tracks at a time, never more.</p>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>12</b><span>tracks</span></div>
+    <div class="stat"><b>36</b><span>levels</span></div>
+    <div class="stat"><b>108</b><span>sources</span></div>
+  </div>
+</div>
+
+<div class="levels">
+  <div></div>
+  <div class="lv">Foundation<span>know the vocabulary</span></div>
+  <div class="lv">Working level<span>can do the job with it</span></div>
+  <div class="lv">Expert<span>others come to you</span></div>
+</div>
+
+<div id="app"></div>
+
+<footer>Twelve tracks at expert level is roughly a decade of work. This is a menu, not a plan &mdash; the two-at-a-time rule is what keeps it honest.<br>Learning is free throughout; exams are not. CSA, CAD, PMP, cloud certifications and the Scrum assessments all charge separately.</footer>
+
+</div>
+
+<script>
+const CATS = [
+  {
+    name:"BUILD SKILLS", note:"you make the thing",
+    accent:"#8F86F0", line:"rgba(143,134,240,0.45)", text:"#B4ADF7",
+    tracks:[
+      {n:1,name:"ServiceNow",sub:"platform development",levels:[
+        {b:["Tables, dictionary, extension, task table","Forms, lists, catalog, roles, notifications","Import sets, transform maps, update sets"],
+         s:[["learning.servicenow.com — CSA path, free","https://learning.servicenow.com"],["developer.servicenow.com — free instance","https://developer.servicenow.com"],["docs.servicenow.com","https://docs.servicenow.com"]]},
+        {b:["Scoped apps, cross-scope, data modelling","GlideRecord, script includes, business rules","ACLs, GlideAjax, UI policies, Flow Designer"],
+         s:[["learning.servicenow.com — CAD path, free","https://learning.servicenow.com"],["YouTube: Chuck Tomasi, JS on the Now Platform",null],["YouTube: SAASWITHSERVICENOW",null]]},
+        {b:["Source control, ATF, instance strategy","Performance tuning, upgrade safety","Integrations, Now Assist, one CIS"],
+         s:[["docs.servicenow.com — technical best practices","https://docs.servicenow.com"],["servicenow.com/community — Developer Advocate","https://www.servicenow.com/community"],["snprotips.com","https://snprotips.com"]]}
+      ]},
+      {n:2,name:"JavaScript and TypeScript",sub:"the language of the web",levels:[
+        {b:["Types, scope, closures, the event loop","Promises, async/await, fetch","DOM, modules, npm"],
+         s:[["javascript.info — free full course","https://javascript.info"],["developer.mozilla.org — JavaScript reference","https://developer.mozilla.org/en-US/docs/Web/JavaScript"],["YouTube: freeCodeCamp, Net Ninja",null]]},
+        {b:["TypeScript: types, generics, narrowing","Node basics; building a small API","Testing with Vitest or Jest"],
+         s:[["typescriptlang.org/docs/handbook","https://www.typescriptlang.org/docs/handbook/intro.html"],["theodinproject.com — free curriculum","https://www.theodinproject.com"],["nodejs.org/docs","https://nodejs.org/docs/latest/api/"]]},
+        {b:["Type-level design; strict configs","Bundling, tooling, runtime performance","Depth in one framework"],
+         s:[["basarat.gitbook.io/typescript — free book","https://basarat.gitbook.io/typescript"],["react.dev/learn","https://react.dev/learn"],["web.dev — performance guides","https://web.dev/performance"]]}
+      ]},
+      {n:3,name:"Python",sub:"scripting and data",levels:[
+        {b:["Syntax, data structures, comprehensions","Files, JSON, CSV, error handling","pip and virtual environments"],
+         s:[["automatetheboringstuff.com — full book, free","https://automatetheboringstuff.com"],["docs.python.org/3/tutorial","https://docs.python.org/3/tutorial/"],["YouTube: Corey Schafer, freeCodeCamp",null]]},
+        {b:["requests: auth, pagination, retries","pandas, pytest, type hints, logging","Command line tools with argparse"],
+         s:[["realpython.com","https://realpython.com"],["pandas.pydata.org/docs","https://pandas.pydata.org/docs/"],["docs.pytest.org","https://docs.pytest.org"]]},
+        {b:["async/await, concurrency, the GIL","Profiling, packaging, SQLAlchemy","FastAPI services; structuring codebases"],
+         s:[["cosmicpython.com — full book, free","https://www.cosmicpython.com"],["fastapi.tiangolo.com","https://fastapi.tiangolo.com"],["packaging.python.org","https://packaging.python.org"]]}
+      ]},
+      {n:4,name:".NET and C#",sub:"enterprise backend",levels:[
+        {b:["Syntax, types, collections, generics","LINQ; solution structure, NuGet","async/await basics, exceptions, disposal"],
+         s:[["learn.microsoft.com/dotnet/csharp","https://learn.microsoft.com/en-us/dotnet/csharp/"],["Interactive C# tutorials on MS Learn","https://learn.microsoft.com/en-us/dotnet/csharp/tour-of-csharp/"],["YouTube: Tim Corey, Nick Chapsas",null]]},
+        {b:["ASP.NET Core Web API, DI, middleware","EF Core: modelling, migrations, queries","Auth, xUnit testing, background workers"],
+         s:[["learn.microsoft.com/aspnet/core","https://learn.microsoft.com/en-us/aspnet/core/"],["learn.microsoft.com/ef/core","https://learn.microsoft.com/en-us/ef/core/"],["xunit.net documentation","https://xunit.net"]]},
+        {b:["Memory, spans, GC behaviour","Clean architecture, DDD, CQRS","Containers, CI/CD, profiling, diagnostics"],
+         s:[["learn.microsoft.com/dotnet/architecture — free ebooks","https://learn.microsoft.com/en-us/dotnet/architecture/"],["learn.microsoft.com/dotnet/core/diagnostics","https://learn.microsoft.com/en-us/dotnet/core/diagnostics/"],["YouTube: Nick Chapsas performance series",null]]}
+      ]},
+      {n:5,name:"Cloud and DevOps",sub:"where it actually runs",levels:[
+        {b:["One provider: compute, storage, IAM","Containers: images, registries, Docker","Git branching and pull request flow"],
+         s:[["learn.microsoft.com/training/azure","https://learn.microsoft.com/en-us/training/azure/"],["aws.amazon.com/training/digital","https://aws.amazon.com/training/digital/"],["roadmap.sh/devops","https://roadmap.sh/devops"]]},
+        {b:["CI/CD: build, test, deploy stages","Infrastructure as code: Terraform or Bicep","Kubernetes basics; secrets and config"],
+         s:[["docs.github.com/actions","https://docs.github.com/en/actions"],["developer.hashicorp.com/terraform/tutorials","https://developer.hashicorp.com/terraform/tutorials"],["kubernetes.io/docs/tutorials","https://kubernetes.io/docs/tutorials/"]]},
+        {b:["Observability, SLOs, incident response","Cost management and rightsizing","Multi-environment release strategy"],
+         s:[["sre.google/books — free SRE books","https://sre.google/books/"],["learn.microsoft.com/azure/well-architected","https://learn.microsoft.com/en-us/azure/well-architected/"],["aws.amazon.com/architecture/well-architected","https://aws.amazon.com/architecture/well-architected/"]]}
+      ]}
+    ]
+  },
+  {
+    name:"DATA AND ARCHITECTURE", note:"you shape how it works",
+    accent:"#2CBE8F", line:"rgba(44,190,143,0.45)", text:"#5FD5AF",
+    tracks:[
+      {n:6,name:"SQL and data",sub:"query and model data",levels:[
+        {b:["SELECT, WHERE, ORDER BY, aggregates","Joins: inner, left, self","NULL semantics and the bugs they cause"],
+         s:[["sqlbolt.com — one evening, start to finish","https://sqlbolt.com"],["mode.com/sql-tutorial","https://mode.com/sql-tutorial/"],["YouTube: techTFQ, Alex The Analyst",null]]},
+        {b:["Subqueries, CTEs, window functions","Dates, time zones, set operations","Normalisation and schema design"],
+         s:[["pgexercises.com — free practice","https://pgexercises.com"],["postgresql.org/docs","https://www.postgresql.org/docs/current/"],["sqlzoo.net","https://sqlzoo.net"]]},
+        {b:["Indexes, execution plans, tuning","Transactions, isolation, partitioning","Migration and dimensional modelling"],
+         s:[["use-the-index-luke.com — free web book","https://use-the-index-luke.com"],["postgresql.org/docs — the EXPLAIN chapter","https://www.postgresql.org/docs/current/using-explain.html"],["kimballgroup.com — dimensional techniques","https://www.kimballgroup.com"]]}
+      ]},
+      {n:7,name:"System design",sub:"architecture, trade-offs",levels:[
+        {b:["HTTP, REST, status codes, idempotency","OAuth 2.0, tokens, mutual TLS","Sync versus async, queues, caching"],
+         s:[["developer.mozilla.org — HTTP reference","https://developer.mozilla.org/en-US/docs/Web/HTTP"],["roadmap.sh/system-design","https://roadmap.sh/system-design"],["YouTube: ByteByteGo, Gaurav Sen","https://www.youtube.com/@ByteByteGo"]]},
+        {b:["Requirements to constraints to trade-offs","Retries, backoff, DLQs, circuit breakers","API design, integration patterns, tracing"],
+         s:[["microservices.io/patterns","https://microservices.io/patterns/"],["enterpriseintegrationpatterns.com","https://www.enterpriseintegrationpatterns.com"],["learn.microsoft.com/azure/architecture/patterns","https://learn.microsoft.com/en-us/azure/architecture/patterns/"]]},
+        {b:["Replication, partitioning, consistency","Resilience, capacity and cost modelling","Migration strategy, decision records"],
+         s:[["github.com/donnemartin/system-design-primer","https://github.com/donnemartin/system-design-primer"],["sre.google/books — free Google SRE books","https://sre.google/books/"],["martinfowler.com/architecture","https://martinfowler.com/architecture/"]]}
+      ]},
+      {n:8,name:"Security and identity",sub:"no longer specialist",levels:[
+        {b:["OWASP Top 10 and how each one happens","Authentication versus authorisation","Secrets handling; never in source control"],
+         s:[["owasp.org/www-project-top-ten","https://owasp.org/www-project-top-ten/"],["portswigger.net/web-security — free labs","https://portswigger.net/web-security"],["YouTube: OWASP, PortSwigger",null]]},
+        {b:["OAuth 2.0 and OIDC flows, properly","Session, token and certificate handling","Threat modelling; secure code review"],
+         s:[["oauth.net/2","https://oauth.net/2/"],["openid.net/developers","https://openid.net/developers/"],["cheatsheetseries.owasp.org","https://cheatsheetseries.owasp.org"]]},
+        {b:["Zero trust and least privilege at scale","Data protection law: PDPA, GDPR","Incident response and forensics basics"],
+         s:[["pdpc.gov.sg — PDPA guidelines","https://www.pdpc.gov.sg"],["nist.gov — CSF and the SP 800 series","https://www.nist.gov/cyberframework"],["owasp.org/www-project-samm","https://owasp.org/www-project-samm/"]]}
+      ]}
+    ]
+  },
+  {
+    name:"DELIVERY SKILLS", note:"you get it shipped, with people",
+    accent:"#E2703F", line:"rgba(226,112,63,0.45)", text:"#F09166",
+    tracks:[
+      {n:9,name:"Business analysis",sub:"requirements and process",levels:[
+        {b:["Requirement types, elicitation methods","Non-leading interviews, the five whys","Stakeholder mapping, RACI, as-is capture"],
+         s:[["modernanalyst.com — articles and templates","https://www.modernanalyst.com"],["iiba.org — free resources section","https://www.iiba.org"],["YouTube: Modern Analyst, IIBA",null]]},
+        {b:["BPMN core set and entity modelling","Given/when/then acceptance criteria","Story mapping, slicing, MoSCoW"],
+         s:[["camunda.com/bpmn — free BPMN tutorial","https://camunda.com/bpmn/"],["jpattonassociates.com — story mapping essay","https://www.jpattonassociates.com"],["mountaingoatsoftware.com — user stories","https://www.mountaingoatsoftware.com"]]},
+        {b:["Scope control and impact assessment","Facilitation, principled pushback","Benefits case, UAT, decision records"],
+         s:[["gojko.net — specification by example articles","https://gojko.net"],["martinfowler.com/bliki","https://martinfowler.com/bliki/"],["modernanalyst.com — advanced templates","https://www.modernanalyst.com"]]}
+      ]},
+      {n:10,name:"Project management",sub:"delivery and governance",levels:[
+        {b:["Scope, schedule, cost, quality trade-offs","WBS, estimation, critical path, milestones","RAID logs, status reporting, comms plan"],
+         s:[["projectmanagement.com — free resources","https://www.projectmanagement.com"],["apm.org.uk — free learning resources","https://www.apm.org.uk"],["YouTube: PMBasics101, Adriana Girdler",null]]},
+        {b:["Scrum, Kanban, WIP limits, flow metrics","Backlog, release planning, forecasting","Budget, vendors, risk, change control"],
+         s:[["scrumguides.org — free, under 20 pages","https://scrumguides.org"],["kanbanguides.org — free","https://kanbanguides.org"],["atlassian.com/agile — Agile Coach, free","https://www.atlassian.com/agile"]]},
+        {b:["Programme and portfolio sequencing","Recovering a failing project","Commercial models, adoption, benefits"],
+         s:[["scrum.org — free resources and assessments","https://www.scrum.org"],["less.works — free LeSS framework material","https://less.works"],["YouTube: David McLachlan",null]]}
+      ]},
+      {n:11,name:"Technical writing",sub:"the invisible multiplier",levels:[
+        {b:["Audience, purpose, one-sentence summary","Plain language; cutting a third of it","Structure: lead with the conclusion"],
+         s:[["developers.google.com/tech-writing — free course","https://developers.google.com/tech-writing"],["plainlanguage.gov","https://www.plainlanguage.gov"],["writethedocs.org — free guides","https://www.writethedocs.org"]]},
+        {b:["Design documents and specifications","Decision records that age well","Diagrams that carry the argument"],
+         s:[["adr.github.io — decision record patterns","https://adr.github.io"],["diataxis.fr — documentation framework","https://diataxis.fr"],["developers.google.com/style","https://developers.google.com/style"]]},
+        {b:["Incident write-ups and postmortems","Editing other people's writing","Documentation that stays current"],
+         s:[["sre.google/books — postmortem chapters","https://sre.google/books/"],["diataxis.fr — the four documentation modes","https://diataxis.fr"],["writethedocs.org — conference talks, free","https://www.writethedocs.org"]]}
+      ]}
+    ]
+  },
+  {
+    name:"CROSS-CUTTING", note:"multiplies every track above",
+    accent:"#DE6392", line:"rgba(222,99,146,0.45)", text:"#EE8CB0",
+    tracks:[
+      {n:12,name:"AI",sub:"working with models",levels:[
+        {b:["Prompt shape: context, task, constraints","Feed real artefacts, don't describe them","Where models fail; what not to paste"],
+         s:[["docs.claude.com — prompt engineering overview","https://docs.claude.com"],["anthropic.com/engineering","https://www.anthropic.com/engineering"],["Practice on your own documents first",null]]},
+        {b:["Structured output; long documents","Code review and test generation","Judging quality, not first answers"],
+         s:[["docs.claude.com — prompt engineering guide","https://docs.claude.com"],["github.com/anthropics/anthropic-cookbook","https://github.com/anthropics/anthropic-cookbook"],["Your own saved prompts, refined over time",null]]},
+        {b:["API and SDK; batch workflows","Tool use, MCP, retrieval over your docs","Evaluation; where automation does not belong"],
+         s:[["docs.claude.com — API documentation","https://docs.claude.com"],["modelcontextprotocol.io","https://modelcontextprotocol.io"],["github.com/anthropics/anthropic-cookbook","https://github.com/anthropics/anthropic-cookbook"]]}
+      ]}
+    ]
+  }
+];
+
+const esc = t => t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+const app = document.getElementById("app");
+app.innerHTML = CATS.map(cat => `
+  <section style="--accent:${cat.accent};--accent-line:${cat.line};--accent-text:${cat.text}">
+    <div class="cat"><b>${cat.name}</b><i>${cat.note}</i><span class="rule"></span></div>
+    ${cat.tracks.map(tr => `
+      <div class="row">
+        <div class="label">
+          <div class="chip">${tr.n}</div>
+          <h3>${esc(tr.name)}</h3>
+          <p>${esc(tr.sub)}</p>
+        </div>
+        ${tr.levels.map((lv,i) => `
+          <div class="card" style="--i:${i}">
+            <div class="bars">${[0,1,2].map(k => `<i class="${k<=i?"on":""}"></i>`).join("")}</div>
+            <ul>${lv.b.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+            <div class="src">${lv.s.map(([label,url]) =>
+              url ? `<a href="${url}" target="_blank" rel="noopener">${esc(label)}</a>`
+                  : `<span>${esc(label)}</span>`).join("")}</div>
+          </div>`).join("")}
+      </div>`).join("")}
+  </section>`).join("");
+
+/* reveal on scroll */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+}, {threshold:0.15, rootMargin:"0px 0px -60px 0px"});
+document.querySelectorAll(".row").forEach(r => io.observe(r));
+
+/* pointer tilt + sheen */
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+if (!reduce) {
+  document.querySelectorAll(".card").forEach(card => {
+    card.addEventListener("pointermove", e => {
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width;
+      const py = (e.clientY - r.top) / r.height;
+      card.style.setProperty("--mx", (px*100)+"%");
+      card.style.setProperty("--my", (py*100)+"%");
+      card.style.transform =
+        `translateY(-6px) rotateX(${(0.5-py)*7}deg) rotateY(${(px-0.5)*8}deg) scale(1.015)`;
+    });
+    card.addEventListener("pointerleave", () => { card.style.transform = ""; });
+  });
+}
+</script>
+</body>
+</html>

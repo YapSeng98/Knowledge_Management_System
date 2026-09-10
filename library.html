@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resource library — Knowledge Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0A0C;
+  --surface:rgba(255,255,255,0.028);
+  --surface-2:rgba(255,255,255,0.045);
+  --line:rgba(255,255,255,0.075);
+  --line-2:rgba(255,255,255,0.13);
+  --ink:#F4F3F1;
+  --ink-2:#A8A69F;
+  --ink-3:#6F6D67;
+  --radius:14px;
+  --measure:60ch;
+  --font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);
+  font-size:15px;line-height:1.6;font-feature-settings:"cv05","ss01";
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;}
+
+/* ambient: one restrained wash, plus a hairline grid */
+.glow{position:fixed;top:-40vmax;left:50%;transform:translateX(-50%);
+  width:140vmax;height:80vmax;z-index:0;pointer-events:none;opacity:.5;
+  background:radial-gradient(50% 50% at 50% 50%, rgba(120,112,214,0.16), rgba(44,190,143,0.06) 45%, transparent 70%);
+  filter:blur(20px);animation:sway 40s ease-in-out infinite alternate;}
+@keyframes sway{from{transform:translateX(-52%) scale(1);}to{transform:translateX(-48%) scale(1.06);}}
+.grain{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(rgba(255,255,255,.014) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.014) 1px,transparent 1px);
+  background-size:56px 56px;
+  mask-image:radial-gradient(80% 60% at 50% 0%,#000,transparent 75%);}
+
+/* top bar */
+.topbar{position:sticky;top:0;z-index:40;border-bottom:1px solid var(--line);
+  background:rgba(10,10,12,0.72);backdrop-filter:saturate(150%) blur(14px);}
+.tinner{max-width:1440px;margin:0 auto;padding:0 32px;height:58px;
+  display:flex;align-items:center;gap:26px;}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);
+  font-size:13.5px;font-weight:600;letter-spacing:-0.1px;white-space:nowrap;}
+.mark{width:18px;height:18px;border-radius:5px;flex:0 0 auto;
+  background:linear-gradient(135deg,#8F86F0,#2CBE8F 55%,#E2703F);
+  box-shadow:0 0 0 1px rgba(255,255,255,.14) inset;}
+.navlinks{display:flex;gap:2px;}
+.navlinks a{font-size:13px;text-decoration:none;color:var(--ink-3);padding:7px 13px;
+  border-radius:8px;transition:.18s;}
+.navlinks a:hover{color:var(--ink);background:var(--surface-2);}
+.navlinks a.on{color:var(--ink);background:var(--surface-2);font-weight:500;}
+.status{margin-left:auto;font-size:12px;color:var(--ink-3);display:flex;align-items:center;gap:8px;white-space:nowrap;}
+.led{width:6px;height:6px;border-radius:50%;background:#2CBE8F;box-shadow:0 0 8px #2CBE8F;flex:0 0 auto;}
+.led.warn{background:#D9A036;box-shadow:0 0 8px #D9A036;}
+.led.cloud{background:#8F86F0;box-shadow:0 0 8px #8F86F0;}
+
+.wrap{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:0 32px 110px;}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:48px;align-items:end;
+  padding:64px 0 34px;border-bottom:1px solid var(--line);}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:1.9px;text-transform:uppercase;
+  color:var(--ink-3);margin-bottom:16px;animation:rise .7s cubic-bezier(.2,.7,.3,1) both;}
+h1{font-size:clamp(28px,3.3vw,42px);font-weight:600;letter-spacing:-1px;line-height:1.12;
+  margin:0 0 16px;animation:rise .7s .05s cubic-bezier(.2,.7,.3,1) both;}
+.lede{font-size:16px;color:var(--ink-2);margin:0;max-width:var(--measure);line-height:1.65;
+  animation:rise .7s .1s cubic-bezier(.2,.7,.3,1) both;}
+@keyframes rise{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+.stats{display:flex;gap:34px;padding-bottom:5px;animation:rise .7s .16s cubic-bezier(.2,.7,.3,1) both;}
+.stat b{display:block;font-size:26px;font-weight:600;letter-spacing:-0.6px;line-height:1.1;
+  font-variant-numeric:tabular-nums;}
+.stat span{display:block;font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--ink-3);margin-top:5px;}
+
+/* controls */
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:26px;}
+input,select,textarea{font-family:inherit;font-size:13.5px;color:var(--ink);
+  background:var(--surface-2);border:1px solid var(--line);border-radius:9px;
+  padding:9px 12px;outline:none;transition:.18s;}
+input::placeholder{color:var(--ink-3);}
+input:focus,select:focus,textarea:focus{border-color:var(--line-2);background:rgba(255,255,255,.06);}
+select option{background:#141416;color:var(--ink);}
+input[type=search]{flex:1;min-width:220px;}
+button{font-family:inherit;font-size:13.5px;border-radius:9px;padding:9px 14px;cursor:pointer;
+  border:1px solid var(--line);background:var(--surface-2);color:var(--ink-2);transition:.18s;}
+button:hover{color:var(--ink);border-color:var(--line-2);}
+button.primary{background:var(--ink);color:#0A0A0C;border-color:var(--ink);font-weight:600;}
+button.primary:hover{background:#fff;}
+button.ghost{background:none;border-color:transparent;padding:5px 8px;color:var(--ink-3);}
+button.ghost:hover{color:var(--ink);background:var(--surface-2);}
+.pills{display:flex;gap:4px;flex-wrap:wrap;background:var(--surface);padding:3px;border-radius:11px;border:1px solid var(--line);}
+.pill{font-size:12.5px;padding:6px 12px;border-radius:8px;border:1px solid transparent;
+  background:none;cursor:pointer;color:var(--ink-3);transition:.18s;}
+.pill:hover{color:var(--ink);}
+.pill.on{background:var(--surface-2);color:var(--ink);border-color:var(--line);font-weight:500;}
+
+.addbox{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px;margin-top:12px;display:none;}
+.addbox.open{display:block;animation:rise .3s cubic-bezier(.2,.7,.3,1) both;}
+.grid5{display:grid;grid-template-columns:2fr 2fr 1.3fr 1fr 1fr;gap:8px;margin-bottom:8px;}
+.row2{display:flex;gap:8px;}.row2 input{flex:1;}
+
+.summary{display:flex;gap:22px;flex-wrap:wrap;align-items:center;padding:14px 18px;margin-top:14px;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  font-size:13px;color:var(--ink-2);}
+.summary b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums;}
+.track{flex:1;min-width:170px;height:5px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden;}
+.track i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#8F86F0,#2CBE8F);
+  transition:width .6s cubic-bezier(.2,.7,.3,1);}
+
+/* sticky level headings */
+.levels{display:grid;grid-template-columns:196px repeat(3,1fr);gap:16px;margin:38px 0 0;
+  position:sticky;top:58px;z-index:20;padding:14px 0 12px;
+  background:linear-gradient(to bottom,var(--bg) 68%,transparent);}
+.lv{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-2);}
+.lv span{display:block;font-weight:400;font-size:12px;letter-spacing:0;text-transform:none;
+  color:var(--ink-3);margin-top:4px;}
+
+/* sections */
+section{margin-top:40px;}
+.cat{display:flex;align-items:center;gap:14px;margin:0 0 20px;}
+.cat b{font-size:11px;font-weight:600;letter-spacing:1.9px;text-transform:uppercase;color:var(--accent);}
+.cat i{font-style:normal;font-size:12.5px;color:var(--ink-3);white-space:nowrap;}
+.cat .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--accent-line),transparent);}
+
+/* rows */
+.row{display:grid;grid-template-columns:196px repeat(3,1fr);gap:16px;margin-bottom:16px;perspective:1600px;}
+.label{padding-top:2px;}
+.chip{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:600;color:#fff;background:var(--accent);
+  font-variant-numeric:tabular-nums;
+  box-shadow:0 4px 14px -6px var(--accent), inset 0 1px 0 rgba(255,255,255,.25);
+  transition:transform .3s cubic-bezier(.2,.7,.3,1);}
+.row:hover .chip{transform:translateY(-2px);}
+.label h3{font-size:15.5px;font-weight:600;margin:13px 0 4px;line-height:1.3;letter-spacing:-0.2px;}
+.label p{font-size:12px;color:var(--ink-3);margin:0 0 10px;line-height:1.45;}
+.mini{width:70px;height:4px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden;}
+.mini i{display:block;height:100%;background:var(--accent);transition:width .5s;}
+.label .n{font-size:11px;color:var(--ink-3);margin-top:6px;display:block;font-variant-numeric:tabular-nums;}
+
+/* cards */
+.card{position:relative;border-radius:var(--radius);padding:16px 16px 14px;
+  background:var(--surface);border:1px solid var(--line);transform-style:preserve-3d;overflow:hidden;
+  box-shadow:0 1px 0 rgba(255,255,255,.03) inset;
+  transition:transform .3s cubic-bezier(.2,.7,.3,1), box-shadow .3s, border-color .3s, background .3s;
+  opacity:0;}
+.row.in .card{animation:cardIn .55s cubic-bezier(.2,.7,.3,1) both;animation-delay:calc(var(--i) * 80ms);}
+@keyframes cardIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+.card::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;
+  background:radial-gradient(240px 240px at var(--mx,50%) var(--my,50%), rgba(255,255,255,.055), transparent 65%);}
+.card:hover{background:var(--surface-2);border-color:var(--accent-line);
+  box-shadow:0 1px 0 rgba(255,255,255,.05) inset, 0 20px 40px -30px rgba(0,0,0,1);}
+.card:hover::after{opacity:1;}
+
+.bars{display:flex;gap:3px;margin-bottom:13px;}
+.bars i{height:2px;border-radius:2px;background:rgba(255,255,255,.1);flex:1;transform-origin:left;}
+.bars i.on{background:var(--accent);opacity:.85;}
+
+/* roadmap card body */
+.card ul{list-style:none;margin:0 0 14px;padding:0;}
+.card li{position:relative;padding-left:15px;font-size:13.5px;line-height:1.5;color:#DEDCD7;margin-bottom:8px;}
+.card li::before{content:"";position:absolute;left:0;top:8px;width:4px;height:4px;border-radius:50%;background:var(--accent);opacity:.8;}
+.src{border-radius:10px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.045);padding:11px 12px;}
+.src a,.src span{display:block;font-size:11.5px;line-height:1.6;color:var(--ink-3);text-decoration:none;
+  word-break:break-word;transition:.18s;}
+.src a:hover{color:var(--accent-text);}
+
+/* library card body */
+.item{display:flex;align-items:flex-start;gap:9px;padding:7px 0;position:relative;z-index:2;}
+.item+.item{border-top:1px solid rgba(255,255,255,.045);}
+.box{width:15px;height:15px;border-radius:4px;border:1.5px solid rgba(255,255,255,.22);
+  cursor:pointer;flex:0 0 auto;margin-top:3px;position:relative;transition:.15s;}
+.box:hover{border-color:var(--accent);}
+.box.on{background:var(--accent);border-color:var(--accent);}
+.box.on::after{content:"";position:absolute;left:4px;top:.5px;width:4px;height:8.5px;
+  border:solid #fff;border-width:0 2px 2px 0;transform:rotate(42deg);}
+.meta{flex:1;min-width:0;}
+.meta a,.meta span.t{font-size:13px;line-height:1.5;color:#DEDCD7;text-decoration:none;word-break:break-word;transition:.18s;}
+.meta a:hover{color:var(--accent-text);}
+.item.done .meta a,.item.done .meta span.t{color:var(--ink-3);text-decoration:line-through;}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px;}
+.tag{font-size:10px;letter-spacing:.4px;padding:2px 7px;border-radius:5px;background:rgba(255,255,255,.06);color:var(--ink-3);}
+.tag.mine{background:var(--accent-line);color:var(--accent-text);}
+.note{font-size:11.5px;color:var(--ink-2);margin-top:4px;font-style:italic;}
+.star{font-size:13px;line-height:1;color:rgba(255,255,255,.14);background:none;border:none;padding:3px;cursor:pointer;transition:.18s;}
+.star:hover{color:rgba(255,255,255,.45);}
+.star.on{color:#D9A036;}
+.none{font-size:12px;color:var(--ink-3);padding:5px 0;}
+
+/* overlays */
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(16px);z-index:60;
+  background:#F4F3F1;color:#0A0A0C;padding:10px 18px;border-radius:9px;font-size:13px;font-weight:500;
+  opacity:0;pointer-events:none;transition:.22s;box-shadow:0 20px 40px -20px rgba(0,0,0,.9);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+dialog{border:1px solid var(--line-2);border-radius:16px;padding:24px;max-width:680px;width:92%;
+  background:#141416;color:var(--ink);box-shadow:0 40px 80px -30px rgba(0,0,0,1);}
+dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(2px);}
+dialog h3{margin:0 0 12px;font-size:17px;font-weight:600;letter-spacing:-0.3px;}
+dialog p{font-size:13px;color:var(--ink-2);margin:0 0 12px;line-height:1.65;}
+dialog ol{font-size:13px;color:var(--ink-2);line-height:1.75;padding-left:20px;margin:0 0 14px;}
+dialog code{background:rgba(255,255,255,.07);padding:1px 6px;border-radius:4px;font-size:12px;}
+dialog textarea{width:100%;height:290px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;line-height:1.55;}
+dialog input{width:100%;margin-bottom:8px;}
+dialog .status{margin:0 0 14px;font-size:12.5px;padding:10px 12px;border-radius:9px;
+  background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);display:block;}
+.dlgbtns{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap;}
+
+footer{margin-top:70px;padding-top:26px;border-top:1px solid var(--line);
+  font-size:12.5px;color:var(--ink-3);line-height:1.75;max-width:var(--measure);}
+
+@media(max-width:1000px){
+  .levels{display:none;}
+  .row{grid-template-columns:1fr;gap:10px;}
+  .label{padding-top:8px;}
+  .hero{grid-template-columns:1fr;gap:26px;padding:40px 0 28px;}
+  .stats{gap:26px;}
+  .tinner,.wrap{padding-left:18px;padding-right:18px;}
+  .grid5{grid-template-columns:1fr 1fr;}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}.card{opacity:1!important;}}
+</style>
+</head>
+<body>
+<div class="glow"></div><div class="grain"></div>
+
+<div class="topbar"><div class="tinner">
+  <a class="brand" href="./index.html"><span class="mark"></span>Knowledge Management System</a>
+  <nav class="navlinks">
+    <a class="" href="./index.html">Roadmap</a>
+    <a class="on" href="./library.html">Library</a>
+  </nav>
+  <div class="status"><span class="led" id="led"></span><span id="whereTxt">checking storage&hellip;</span></div>
+</div></div>
+
+<div class="wrap">
+
+<div class="hero">
+  <div>
+    <div class="eyebrow">Working set</div>
+    <h1>Resource library</h1>
+    <p class="lede">The same twelve tracks, but every source is something you can tick off, star, annotate or add to. Progress saves automatically.</p>
+  </div>
+  <div class="stats">
+    <div class="stat"><b id="hDone">0</b><span>done</span></div>
+    <div class="stat"><b id="hMine">0</b><span>yours</span></div>
+    <div class="stat"><b id="hStar">0</b><span>starred</span></div>
+  </div>
+</div>
+
+<div class="bar">
+  <input type="search" id="q" placeholder="Search resources or skills">
+  <select id="fCat">
+    <option value="">All categories</option>
+    <option value="0">Build skills</option>
+    <option value="1">Data and architecture</option>
+    <option value="2">Delivery skills</option>
+    <option value="3">Cross-cutting</option>
+  </select>
+  <div class="pills" id="fState">
+    <button class="pill on" data-s="">Everything</button>
+    <button class="pill" data-s="todo">To do</button>
+    <button class="pill" data-s="done">Done</button>
+    <button class="pill" data-s="star">Starred</button>
+    <button class="pill" data-s="mine">Mine</button>
+  </div>
+  <button class="primary" id="btnAdd">Add resource</button>
+  <button id="btnCloud">Cloud sync</button>
+  <button id="btnBackup">Backup</button>
+  <button id="btnRestore">Restore</button>
+  <button id="btnMd">Markdown</button>
+  <input type="file" id="fileIn" accept="application/json" hidden>
+</div>
+
+<div class="addbox" id="addbox">
+  <div class="grid5">
+    <input id="aTitle" placeholder="Title, e.g. Kubernetes basics course">
+    <input id="aUrl" placeholder="https://… (optional)">
+    <select id="aSkill"></select>
+    <select id="aLevel"><option value="0">Foundation</option><option value="1">Working</option><option value="2">Expert</option></select>
+    <select id="aType"><option>doc</option><option>course</option><option>video</option><option>practice</option><option>book</option><option>site</option></select>
+  </div>
+  <div class="row2">
+    <input id="aNote" placeholder="Note to yourself (optional)">
+    <button class="primary" id="aSave">Save</button>
+    <button id="aCancel">Cancel</button>
+  </div>
+</div>
+
+<div class="summary">
+  <span><b id="sDone">0</b> of <b id="sTotal">0</b> done</span>
+  <div class="track"><i id="sBar" style="width:0%"></i></div>
+  <span><b id="sMine">0</b> yours · <b id="sStar">0</b> starred</span>
+  <button class="ghost" id="btnReset">Reset everything</button>
+</div>
+
+<div class="levels">
+  <div></div>
+  <div class="lv">Foundation<span>know the vocabulary</span></div>
+  <div class="lv">Working level<span>can do the job with it</span></div>
+  <div class="lv">Expert<span>others come to you</span></div>
+</div>
+
+<div id="app"></div>
+<footer>Free sources only. Ticks, stars and notes are stored on this device unless cloud sync is switched on.<br>Back up regularly &mdash; browser storage disappears if you clear site data.</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<dialog id="dlgMd">
+  <h3>Your library as markdown</h3>
+  <p>Select all and copy. Drops straight into Notion, Obsidian or a README with your progress intact.</p>
+  <textarea id="mdText" readonly></textarea>
+  <div class="dlgbtns"><button id="mdClose">Close</button></div>
+</dialog>
+
+<dialog id="dlgCloud">
+  <h3>Cloud sync</h3>
+  <div class="status" id="cloudStatus">Not connected. Data is saved locally only.</div>
+  <p>Paste your Supabase project URL and anon key, then sign in by email. The anon key is safe to store here — row level security is what protects the data.</p>
+  <input id="cUrl" placeholder="https://xxxxxxxx.supabase.co">
+  <input id="cKey" placeholder="anon public key">
+  <input id="cEmail" type="email" placeholder="your@email.com">
+  <div class="dlgbtns">
+    <button id="cSignout" class="ghost">Sign out</button>
+    <button id="cPull">Pull from cloud</button>
+    <button id="cPush">Push to cloud</button>
+    <button class="primary" id="cConnect">Connect / send link</button>
+    <button id="cClose">Close</button>
+  </div>
+</dialog>
+
+<script>
+const CATS=[
+  {name:"BUILD SKILLS",note:"you make the thing",accent:"#8F86F0",line:"rgba(143,134,240,0.30)",text:"#B4ADF7"},
+  {name:"DATA AND ARCHITECTURE",note:"you shape how it works",accent:"#2CBE8F",line:"rgba(44,190,143,0.30)",text:"#5FD5AF"},
+  {name:"DELIVERY SKILLS",note:"you get it shipped, with people",accent:"#E2703F",line:"rgba(226,112,63,0.30)",text:"#F09166"},
+  {name:"CROSS-CUTTING",note:"multiplies every track above",accent:"#DE6392",line:"rgba(222,99,146,0.30)",text:"#EE8CB0"}
+];
+const LEVELS=["FOUNDATION","WORKING LEVEL","EXPERT"];
+const SUBS={"ServiceNow":"platform development","JavaScript and TypeScript":"the language of the web","Python":"scripting and data",".NET and C#":"enterprise backend","Cloud and DevOps":"where it actually runs","SQL and data":"query and model data","System design":"architecture, trade-offs","Security and identity":"no longer specialist","Business analysis":"requirements and process","Project management":"delivery and governance","Technical writing":"the invisible multiplier","AI":"working with models"};
+const SEED=[
+ {name:"ServiceNow",cat:0,L:[
+  [["ServiceNow University — CSA learning path","https://learning.servicenow.com","course"],
+   ["Personal Developer Instance — free","https://developer.servicenow.com","practice"],
+   ["ServiceNow product documentation","https://docs.servicenow.com","doc"]],
+  [["ServiceNow University — CAD learning path","https://learning.servicenow.com","course"],
+   ["Chuck Tomasi — JavaScript on the Now Platform",null,"video"],
+   ["SAASWITHSERVICENOW on YouTube",null,"video"]],
+  [["Technical best practices documentation","https://docs.servicenow.com","doc"],
+   ["Developer Advocate blog on the Community","https://www.servicenow.com/community","site"],
+   ["SN Pro Tips","https://snprotips.com","site"]]]},
+ {name:"JavaScript and TypeScript",cat:0,L:[
+  [["javascript.info — free full course","https://javascript.info","course"],
+   ["MDN JavaScript reference","https://developer.mozilla.org/en-US/docs/Web/JavaScript","doc"],
+   ["freeCodeCamp and Net Ninja on YouTube",null,"video"]],
+  [["TypeScript handbook","https://www.typescriptlang.org/docs/handbook/intro.html","doc"],
+   ["The Odin Project — free curriculum","https://www.theodinproject.com","course"],
+   ["Node.js documentation","https://nodejs.org/docs/latest/api/","doc"]],
+  [["TypeScript Deep Dive — free book","https://basarat.gitbook.io/typescript","book"],
+   ["react.dev learn section","https://react.dev/learn","doc"],
+   ["web.dev performance guides","https://web.dev/performance","site"]]]},
+ {name:"Python",cat:0,L:[
+  [["Automate the Boring Stuff — full book, free","https://automatetheboringstuff.com","book"],
+   ["Official Python tutorial","https://docs.python.org/3/tutorial/","doc"],
+   ["Corey Schafer and freeCodeCamp on YouTube",null,"video"]],
+  [["Real Python tutorials","https://realpython.com","site"],
+   ["pandas documentation","https://pandas.pydata.org/docs/","doc"],
+   ["pytest documentation","https://docs.pytest.org","doc"]],
+  [["Architecture Patterns with Python — free","https://www.cosmicpython.com","book"],
+   ["FastAPI documentation","https://fastapi.tiangolo.com","doc"],
+   ["Python packaging guide","https://packaging.python.org","doc"]]]},
+ {name:".NET and C#",cat:0,L:[
+  [["Microsoft Learn — C# guide","https://learn.microsoft.com/en-us/dotnet/csharp/","course"],
+   ["A tour of C#","https://learn.microsoft.com/en-us/dotnet/csharp/tour-of-csharp/","doc"],
+   ["Tim Corey and Nick Chapsas on YouTube",null,"video"]],
+  [["ASP.NET Core documentation","https://learn.microsoft.com/en-us/aspnet/core/","doc"],
+   ["EF Core documentation","https://learn.microsoft.com/en-us/ef/core/","doc"],
+   ["xUnit documentation","https://xunit.net","doc"]],
+  [[".NET architecture guides — free ebooks","https://learn.microsoft.com/en-us/dotnet/architecture/","book"],
+   [".NET diagnostics documentation","https://learn.microsoft.com/en-us/dotnet/core/diagnostics/","doc"],
+   ["Nick Chapsas performance series",null,"video"]]]},
+ {name:"Cloud and DevOps",cat:0,L:[
+  [["Microsoft Learn — Azure training","https://learn.microsoft.com/en-us/training/azure/","course"],
+   ["AWS Skill Builder — digital training","https://aws.amazon.com/training/digital/","course"],
+   ["roadmap.sh DevOps roadmap","https://roadmap.sh/devops","site"]],
+  [["GitHub Actions documentation","https://docs.github.com/en/actions","doc"],
+   ["Terraform tutorials","https://developer.hashicorp.com/terraform/tutorials","course"],
+   ["Kubernetes tutorials","https://kubernetes.io/docs/tutorials/","doc"]],
+  [["Google SRE books — free online","https://sre.google/books/","book"],
+   ["Azure Well-Architected Framework","https://learn.microsoft.com/en-us/azure/well-architected/","doc"],
+   ["AWS Well-Architected Framework","https://aws.amazon.com/architecture/well-architected/","doc"]]]},
+ {name:"SQL and data",cat:1,L:[
+  [["SQLBolt — one evening, start to finish","https://sqlbolt.com","practice"],
+   ["Mode SQL tutorial","https://mode.com/sql-tutorial/","course"],
+   ["techTFQ and Alex The Analyst on YouTube",null,"video"]],
+  [["PostgreSQL Exercises","https://pgexercises.com","practice"],
+   ["PostgreSQL documentation","https://www.postgresql.org/docs/current/","doc"],
+   ["SQLZoo","https://sqlzoo.net","practice"]],
+  [["Use The Index, Luke — free web book","https://use-the-index-luke.com","book"],
+   ["PostgreSQL EXPLAIN chapter","https://www.postgresql.org/docs/current/using-explain.html","doc"],
+   ["Kimball Group dimensional techniques","https://www.kimballgroup.com","site"]]]},
+ {name:"System design",cat:1,L:[
+  [["MDN HTTP reference","https://developer.mozilla.org/en-US/docs/Web/HTTP","doc"],
+   ["roadmap.sh system design","https://roadmap.sh/system-design","site"],
+   ["ByteByteGo on YouTube","https://www.youtube.com/@ByteByteGo","video"]],
+  [["Microservices patterns catalogue","https://microservices.io/patterns/","site"],
+   ["Enterprise Integration Patterns","https://www.enterpriseintegrationpatterns.com","site"],
+   ["Azure cloud design patterns","https://learn.microsoft.com/en-us/azure/architecture/patterns/","doc"]],
+  [["System Design Primer","https://github.com/donnemartin/system-design-primer","site"],
+   ["Google SRE books — free online","https://sre.google/books/","book"],
+   ["martinfowler.com architecture","https://martinfowler.com/architecture/","site"]]]},
+ {name:"Security and identity",cat:1,L:[
+  [["OWASP Top 10","https://owasp.org/www-project-top-ten/","doc"],
+   ["PortSwigger Web Security Academy — free labs","https://portswigger.net/web-security","practice"],
+   ["OWASP and PortSwigger on YouTube",null,"video"]],
+  [["OAuth 2.0 specifications and guides","https://oauth.net/2/","doc"],
+   ["OpenID Connect for developers","https://openid.net/developers/","doc"],
+   ["OWASP Cheat Sheet Series","https://cheatsheetseries.owasp.org","doc"]],
+  [["PDPC — PDPA guidelines","https://www.pdpc.gov.sg","doc"],
+   ["NIST Cybersecurity Framework","https://www.nist.gov/cyberframework","doc"],
+   ["OWASP SAMM","https://owasp.org/www-project-samm/","site"]]]},
+ {name:"Business analysis",cat:2,L:[
+  [["Modern Analyst — articles and templates","https://www.modernanalyst.com","site"],
+   ["IIBA free resources","https://www.iiba.org","site"],
+   ["Modern Analyst and IIBA on YouTube",null,"video"]],
+  [["Camunda BPMN tutorial","https://camunda.com/bpmn/","course"],
+   ["Jeff Patton — story mapping","https://www.jpattonassociates.com","site"],
+   ["Mountain Goat Software — user stories","https://www.mountaingoatsoftware.com","site"]],
+  [["gojko.net — specification by example","https://gojko.net","site"],
+   ["martinfowler.com bliki","https://martinfowler.com/bliki/","site"],
+   ["Modern Analyst — advanced templates","https://www.modernanalyst.com","site"]]]},
+ {name:"Project management",cat:2,L:[
+  [["projectmanagement.com free resources","https://www.projectmanagement.com","site"],
+   ["APM learning resources","https://www.apm.org.uk","site"],
+   ["PMBasics101 and Adriana Girdler on YouTube",null,"video"]],
+  [["The Scrum Guide — free, under 20 pages","https://scrumguides.org","doc"],
+   ["The Kanban Guide","https://kanbanguides.org","doc"],
+   ["Atlassian Agile Coach","https://www.atlassian.com/agile","course"]],
+  [["Scrum.org resources and open assessments","https://www.scrum.org","practice"],
+   ["LeSS framework material","https://less.works","site"],
+   ["David McLachlan on YouTube",null,"video"]]]},
+ {name:"Technical writing",cat:2,L:[
+  [["Google technical writing courses — free","https://developers.google.com/tech-writing","course"],
+   ["plainlanguage.gov","https://www.plainlanguage.gov","site"],
+   ["Write the Docs guides","https://www.writethedocs.org","site"]],
+  [["Architecture decision records","https://adr.github.io","site"],
+   ["Diátaxis documentation framework","https://diataxis.fr","doc"],
+   ["Google developer documentation style guide","https://developers.google.com/style","doc"]],
+  [["Google SRE — postmortem chapters","https://sre.google/books/","book"],
+   ["Diátaxis — the four modes","https://diataxis.fr","doc"],
+   ["Write the Docs conference talks","https://www.writethedocs.org","video"]]]},
+ {name:"AI",cat:3,L:[
+  [["Claude documentation — prompt engineering","https://docs.claude.com","doc"],
+   ["Anthropic engineering blog","https://www.anthropic.com/engineering","site"],
+   ["Practice on your own documents first",null,"practice"]],
+  [["Claude prompt engineering guide","https://docs.claude.com","doc"],
+   ["Anthropic cookbook","https://github.com/anthropics/anthropic-cookbook","practice"],
+   ["Your own saved prompts, refined over time",null,"practice"]],
+  [["Claude API documentation","https://docs.claude.com","doc"],
+   ["Model Context Protocol","https://modelcontextprotocol.io","doc"],
+   ["Anthropic cookbook","https://github.com/anthropics/anthropic-cookbook","practice"]]]}
+];
+
+const KEY="kms-library-v1", CFGKEY="kms-cloud-cfg";
+let state={added:[],marks:{}};
+let filters={q:"",cat:"",st:""};
+const $=id=>document.getElementById(id);
+const esc=t=>String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove("show"),2600);}
+
+/* ---------- local storage layer ---------- */
+const Store={
+  mode:"memory",
+  detect(){
+    if(window.storage&&typeof window.storage.set==="function"){this.mode="claude";return;}
+    try{localStorage.setItem("__t","1");localStorage.removeItem("__t");this.mode="local";}catch(e){this.mode="memory";}
+  },
+  label(){return {claude:"Claude storage",local:"this browser",memory:"memory only — nothing persists"}[this.mode];},
+  async load(){
+    try{
+      if(this.mode==="claude"){const r=await window.storage.get(KEY);return r&&r.value?JSON.parse(r.value):null;}
+      if(this.mode==="local"){const v=localStorage.getItem(KEY);return v?JSON.parse(v):null;}
+    }catch(e){}
+    return null;
+  },
+  async save(d){
+    const s=JSON.stringify(d);
+    try{
+      if(this.mode==="claude"){return !!(await window.storage.set(KEY,s));}
+      if(this.mode==="local"){localStorage.setItem(KEY,s);return true;}
+    }catch(e){return false;}
+    return false;
+  }
+};
+
+/* ---------- optional Supabase sync ---------- */
+const Cloud={
+  cfg:null, sb:null, user:null, ready:false,
+  readCfg(){try{return JSON.parse(localStorage.getItem(CFGKEY)||"null");}catch(e){return null;}},
+  writeCfg(c){try{localStorage.setItem(CFGKEY,JSON.stringify(c));}catch(e){}},
+  async init(){
+    this.cfg=this.readCfg();
+    if(!this.cfg||!this.cfg.url||!this.cfg.key)return false;
+    try{
+      const mod=await import("https://esm.sh/@supabase/supabase-js@2");
+      this.sb=mod.createClient(this.cfg.url,this.cfg.key);
+      const r=await this.sb.auth.getSession();
+      this.user=r.data&&r.data.session?r.data.session.user:null;
+      this.ready=true;
+      return true;
+    }catch(e){this.err=e.message||String(e);return false;}
+  },
+  async sendLink(email){
+    return this.sb.auth.signInWithOtp({email:email,options:{emailRedirectTo:location.href.split("#")[0]}});
+  },
+  async pull(){
+    const r=await this.sb.from("library_state").select("state").eq("user_id",this.user.id).maybeSingle();
+    if(r.error)throw r.error;
+    return r.data?r.data.state:null;
+  },
+  async push(s){
+    const r=await this.sb.from("library_state").upsert({user_id:this.user.id,state:s,updated_at:new Date().toISOString()});
+    if(r.error)throw r.error;
+  },
+  status(){
+    if(!this.cfg||!this.cfg.url)return "Not connected. Data is saved locally only.";
+    if(this.err)return "Could not reach Supabase: "+this.err;
+    if(!this.user)return "Connected to the project, but not signed in. Enter your email and press Connect to get a magic link.";
+    return "Signed in as "+this.user.email+". Changes sync automatically.";
+  }
+};
+
+let saveTimer;
+function save(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(async()=>{
+    const ok=await Store.save(state);
+    if(!ok&&Store.mode!=="memory")toast("Local save failed — use Backup");
+    if(Cloud.ready&&Cloud.user){
+      try{await Cloud.push(state);}catch(e){toast("Cloud push failed: "+(e.message||e));}
+    }
+  },400);
+}
+
+/* ---------- data ---------- */
+function allItems(){
+  const out=[];
+  SEED.forEach((sk,si)=>sk.L.forEach((lv,li)=>lv.forEach((r,ri)=>{
+    out.push({id:"s"+si+"-"+li+"-"+ri,skill:sk.name,cat:sk.cat,level:li,title:r[0],url:r[1],type:r[2],mine:false});})));
+  state.added.forEach(a=>out.push(Object.assign({},a,{mine:true})));
+  return out;
+}
+function passes(it){
+  const m=state.marks[it.id]||{};
+  if(filters.cat!==""&&String(it.cat)!==filters.cat)return false;
+  if(filters.st==="done"&&!m.done)return false;
+  if(filters.st==="todo"&&m.done)return false;
+  if(filters.st==="star"&&!m.star)return false;
+  if(filters.st==="mine"&&!it.mine)return false;
+  if(filters.q&&!((it.title+" "+it.skill+" "+(m.note||"")).toLowerCase().includes(filters.q.toLowerCase())))return false;
+  return true;
+}
+function itemHtml(it){
+  const m=state.marks[it.id]||{};
+  return '<div class="item '+(m.done?"done":"")+'">'
+    + '<div class="box '+(m.done?"on":"")+'" data-done="'+it.id+'"></div><div class="meta">'
+    + (it.url?'<a href="'+esc(it.url)+'" target="_blank" rel="noopener">'+esc(it.title)+'</a>'
+             :'<span class="t">'+esc(it.title)+'</span>')
+    + '<div class="tags"><span class="tag">'+esc(it.type)+'</span>'+(it.mine?'<span class="tag mine">yours</span>':'')+'</div>'
+    + (m.note?'<div class="note">'+esc(m.note)+'</div>':'')
+    + '</div><button class="star '+(m.star?"on":"")+'" data-star="'+it.id+'">&#9733;</button>'
+    + (it.mine?'<button class="ghost" data-del="'+it.id+'">&times;</button>':'')
+    + '</div>';
+}
+
+function render(){
+  const items=allItems(), shown=items.filter(passes);
+  const doneN=items.filter(i=>(state.marks[i.id]||{}).done).length;
+  $("sDone").textContent=doneN;$("sTotal").textContent=items.length;
+  $("sBar").style.width=(items.length?doneN/items.length*100:0)+"%";
+  $("sMine").textContent=items.filter(i=>i.mine).length;
+  $("sStar").textContent=items.filter(i=>(state.marks[i.id]||{}).star).length;
+  $("hDone").textContent=doneN;$("hMine").textContent=items.filter(i=>i.mine).length;$("hStar").textContent=$("sStar").textContent;
+
+  const order=SEED.map(s=>s.name);
+  state.added.forEach(a=>{if(order.indexOf(a.skill)<0)order.push(a.skill);});
+
+  let html="";
+  CATS.forEach((cat,ci)=>{
+    const skills=order.filter(n=>{
+      const sk=SEED.find(s=>s.name===n);
+      const c=sk?sk.cat:((state.added.find(a=>a.skill===n)||{}).cat||0);
+      return c===ci&&shown.some(i=>i.skill===n);
+    });
+    if(!skills.length)return;
+    html+='<section style="--accent:'+cat.accent+';--accent-line:'+cat.line+';--accent-text:'+cat.text+'">'
+        + '<div class="cat"><b>'+cat.name+'</b><i>'+cat.note+'</i><span class="rule"></span></div>';
+    skills.forEach(skName=>{
+      const all=items.filter(i=>i.skill===skName);
+      const mine=shown.filter(i=>i.skill===skName);
+      const dN=all.filter(i=>(state.marks[i.id]||{}).done).length;
+      const pct=all.length?dN/all.length*100:0;
+      const n=SEED.findIndex(s=>s.name===skName)+1;
+      html+='<div class="row"><div class="label">'
+          + '<div class="chip">'+(n||"+")+'</div>'
+          + '<h3>'+esc(skName)+'</h3>'
+          + '<p>'+esc(SUBS[skName]||"your own track")+'</p>'
+          + '<div class="mini"><i style="width:'+pct+'%"></i></div>'
+          + '<span class="n">'+dN+' of '+all.length+' done</span>'
+          + '</div>';
+      [0,1,2].forEach(li=>{
+        const l=mine.filter(i=>i.level===li);
+        html+='<div class="card" style="--i:'+li+'">'
+            + '<div class="bars">'+[0,1,2].map(k=>'<i class="'+(k<=li?"on":"")+'"></i>').join("")+'</div>'
+            + (l.length?l.map(itemHtml).join(""):'<div class="none">Nothing here matches the filter.</div>')
+            + '</div>';
+      });
+      html+='</div>';
+    });
+    html+='</section>';
+  });
+  $("app").innerHTML=html||'<div class="none" style="padding:40px;text-align:center">Nothing matches those filters.</div>';
+  wire();
+}
+
+function wire(){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}}),{threshold:.12,rootMargin:"0px 0px -50px 0px"});
+  document.querySelectorAll(".row").forEach(r=>io.observe(r));
+  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  document.querySelectorAll(".card").forEach(card=>{
+    card.addEventListener("pointermove",e=>{
+      if(e.target.closest(".item"))return;
+      const r=card.getBoundingClientRect();
+      const px=(e.clientX-r.left)/r.width, py=(e.clientY-r.top)/r.height;
+      card.style.setProperty("--mx",px*100+"%");card.style.setProperty("--my",py*100+"%");
+      card.style.transform="translateY(-4px) rotateX("+((0.5-py)*4)+"deg) rotateY("+((px-0.5)*5)+"deg)";
+    });
+    card.addEventListener("pointerleave",()=>{card.style.transform="";});
+  });
+}
+
+/* ---------- interactions ---------- */
+$("app").addEventListener("click",e=>{
+  const t=e.target;
+  if(t.dataset.done){const m=state.marks[t.dataset.done]||{};m.done=!m.done;state.marks[t.dataset.done]=m;save();render();return;}
+  if(t.dataset.star){const m=state.marks[t.dataset.star]||{};m.star=!m.star;state.marks[t.dataset.star]=m;save();render();return;}
+  if(t.dataset.del){state.added=state.added.filter(a=>a.id!==t.dataset.del);delete state.marks[t.dataset.del];save();render();toast("Removed");}
+});
+$("q").addEventListener("input",e=>{filters.q=e.target.value;render();});
+$("fCat").addEventListener("change",e=>{filters.cat=e.target.value;render();});
+$("fState").addEventListener("click",e=>{if(e.target.dataset.s===undefined)return;
+  Array.prototype.forEach.call($("fState").children,b=>b.classList.remove("on"));
+  e.target.classList.add("on");filters.st=e.target.dataset.s;render();});
+
+$("btnAdd").addEventListener("click",()=>{$("addbox").classList.toggle("open");$("aTitle").focus();});
+$("aCancel").addEventListener("click",()=>$("addbox").classList.remove("open"));
+$("aSave").addEventListener("click",()=>{
+  const title=$("aTitle").value.trim();
+  if(!title){toast("A title is needed");return;}
+  let url=$("aUrl").value.trim();
+  if(url&&!/^https?:\/\//i.test(url))url="https://"+url;
+  const skill=$("aSkill").value, sk=SEED.find(s=>s.name===skill)||{cat:0};
+  const it={id:"u"+Date.now(),title:title,url:url||null,skill:skill,cat:sk.cat,
+    level:Number($("aLevel").value),type:$("aType").value};
+  state.added.push(it);
+  const note=$("aNote").value.trim();
+  if(note)state.marks[it.id]={note:note};
+  ["aTitle","aUrl","aNote"].forEach(i=>$(i).value="");
+  save();render();toast("Added to "+skill);
+});
+
+$("btnBackup").addEventListener("click",()=>{
+  const blob=new Blob([JSON.stringify({v:1,saved:new Date().toISOString(),state:state},null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="kms-library-"+new Date().toISOString().slice(0,10)+".json";
+  a.click();URL.revokeObjectURL(a.href);toast("Backup downloaded");
+});
+$("btnRestore").addEventListener("click",()=>$("fileIn").click());
+$("fileIn").addEventListener("change",e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const p=JSON.parse(r.result), s=p.state||p;
+      if(!s||typeof s!=="object")throw 0;
+      state={added:s.added||[],marks:s.marks||{}};
+      save();render();toast("Restored");
+    }catch(err){toast("That file could not be read");}
+  };
+  r.readAsText(f);e.target.value="";
+});
+
+$("btnMd").addEventListener("click",()=>{
+  let md="# Skill resource library\n";
+  const items=allItems(), order=SEED.map(s=>s.name);
+  state.added.forEach(a=>{if(order.indexOf(a.skill)<0)order.push(a.skill);});
+  order.forEach(sk=>{
+    const mine=items.filter(i=>i.skill===sk);if(!mine.length)return;
+    md+="\n## "+sk+"\n";
+    [0,1,2].forEach(li=>{
+      const l=mine.filter(i=>i.level===li);if(!l.length)return;
+      md+="\n### "+LEVELS[li].toLowerCase()+"\n";
+      l.forEach(it=>{const m=state.marks[it.id]||{};
+        md+="- ["+(m.done?"x":" ")+"] "+(m.star?"* ":"")+it.title+(it.url?" — "+it.url:"")+(m.note?"  \n      "+m.note:"")+"\n";});
+    });
+  });
+  $("mdText").value=md;$("dlgMd").showModal();
+});
+$("mdClose").addEventListener("click",()=>$("dlgMd").close());
+$("btnReset").addEventListener("click",()=>{
+  if(!confirm("Clear all ticks, stars, notes and your own resources? Back up first if unsure."))return;
+  state={added:[],marks:{}};save();render();toast("Reset");
+});
+
+/* ---------- cloud dialog ---------- */
+function refreshCloudUi(){
+  $("cloudStatus").textContent=Cloud.status();
+  const led=$("led");
+  led.classList.remove("warn","cloud");
+  if(Cloud.ready&&Cloud.user){led.classList.add("cloud");$("whereTxt").textContent="Synced · "+Cloud.user.email;}
+  else{
+    if(Store.mode==="memory")led.classList.add("warn");
+    $("whereTxt").textContent="Saving to "+Store.label();
+  }
+}
+$("btnCloud").addEventListener("click",()=>{
+  const c=Cloud.cfg||{};
+  $("cUrl").value=c.url||"";$("cKey").value=c.key||"";$("cEmail").value=c.email||"";
+  refreshCloudUi();$("dlgCloud").showModal();
+});
+$("cClose").addEventListener("click",()=>$("dlgCloud").close());
+$("cConnect").addEventListener("click",async()=>{
+  const url=$("cUrl").value.trim(), key=$("cKey").value.trim(), email=$("cEmail").value.trim();
+  if(!url||!key){toast("Project URL and anon key are both needed");return;}
+  Cloud.writeCfg({url:url,key:key,email:email});
+  Cloud.err=null;
+  $("cloudStatus").textContent="Connecting…";
+  const ok=await Cloud.init();
+  if(!ok){refreshCloudUi();return;}
+  if(!Cloud.user){
+    if(!email){$("cloudStatus").textContent="Connected. Add your email to receive a sign-in link.";return;}
+    try{
+      const r=await Cloud.sendLink(email);
+      $("cloudStatus").textContent=r.error?("Could not send link: "+r.error.message):("Magic link sent to "+email+". Open it in this browser.");
+    }catch(e){$("cloudStatus").textContent="Could not send link: "+(e.message||e);}
+  }else refreshCloudUi();
+});
+$("cPull").addEventListener("click",async()=>{
+  if(!(Cloud.ready&&Cloud.user)){toast("Sign in first");return;}
+  try{
+    const s=await Cloud.pull();
+    if(!s){toast("Nothing stored in the cloud yet");return;}
+    state={added:s.added||[],marks:s.marks||{}};
+    await Store.save(state);render();toast("Pulled from cloud");
+  }catch(e){toast("Pull failed: "+(e.message||e));}
+});
+$("cPush").addEventListener("click",async()=>{
+  if(!(Cloud.ready&&Cloud.user)){toast("Sign in first");return;}
+  try{await Cloud.push(state);toast("Pushed to cloud");}catch(e){toast("Push failed: "+(e.message||e));}
+});
+$("cSignout").addEventListener("click",async()=>{
+  if(Cloud.sb){await Cloud.sb.auth.signOut();Cloud.user=null;refreshCloudUi();toast("Signed out");}
+});
+
+/* ---------- boot ---------- */
+$("aSkill").innerHTML=SEED.map(s=>'<option>'+esc(s.name)+'</option>').join("");
+Store.detect();
+$("whereTxt").textContent="Saving to "+Store.label();
+if(Store.mode==="memory")$("led").classList.add("warn");
+
+(async function(){
+  const local=await Store.load();
+  if(local)state={added:local.added||[],marks:local.marks||{}};
+  render();
+  const ok=await Cloud.init();
+  if(ok&&Cloud.user){
+    try{
+      const remote=await Cloud.pull();
+      if(remote){state={added:remote.added||[],marks:remote.marks||{}};await Store.save(state);render();}
+      else await Cloud.push(state);
+    }catch(e){toast("Cloud read failed: "+(e.message||e));}
+  }
+  refreshCloudUi();
+})();
+</script>
+</body>
+</html>
