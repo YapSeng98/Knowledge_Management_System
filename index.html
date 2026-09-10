@@ -77,6 +77,17 @@ h1{font-size:clamp(28px,3.3vw,42px);font-weight:600;letter-spacing:-1px;line-hei
   font-variant-numeric:tabular-nums;}
 .stat span{display:block;font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--ink-3);margin-top:5px;}
 
+/* ticker */
+.ticker{position:relative;overflow:hidden;border-bottom:1px solid var(--line);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);}
+.ticker-track{display:flex;width:max-content;animation:tickerScroll 42s linear infinite;}
+.ticker:hover .ticker-track{animation-play-state:paused;}
+.tick{display:flex;align-items:center;gap:9px;padding:11px 24px;font-size:11px;font-weight:600;
+  letter-spacing:1.6px;text-transform:uppercase;color:var(--ink-3);white-space:nowrap;}
+.tick::before{content:"";width:3px;height:3px;border-radius:50%;background:var(--tick-accent,var(--ink-3));flex:0 0 auto;}
+@keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
 /* controls */
 .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:26px;}
 input,select,textarea{font-family:inherit;font-size:13.5px;color:var(--ink);
@@ -234,7 +245,7 @@ footer{margin-top:70px;padding-top:26px;border-top:1px solid var(--line);
     <a class="on" href="./index.html">Roadmap</a>
     <a class="" href="./library.html">Library</a>
   </nav>
-  <div class="status">12 tracks &middot; 108 free sources</div>
+  <div class="status" id="statusText">12 tracks &middot; 108 free sources</div>
 </div></div>
 
 <div class="wrap">
@@ -242,15 +253,17 @@ footer{margin-top:70px;padding-top:26px;border-top:1px solid var(--line);
 <div class="hero">
   <div>
     <div class="eyebrow">Learning system</div>
-    <h1>Twelve roadmaps,<br>beginner to expert</h1>
-    <p class="lede">One lane per skill, grouped by what the skill is actually for. Every source listed is free. Run two tracks at a time, never more.</p>
+    <h1>Start today,<br>better tomorrow</h1>
+    <p class="lede">Twelve roadmaps, one lane per skill, grouped by what the skill is actually for. Every source listed is free. Run two tracks at a time, never more.</p>
   </div>
   <div class="stats">
-    <div class="stat"><b>12</b><span>tracks</span></div>
-    <div class="stat"><b>36</b><span>levels</span></div>
-    <div class="stat"><b>108</b><span>sources</span></div>
+    <div class="stat"><b id="statTracks">0</b><span>tracks</span></div>
+    <div class="stat"><b id="statLevels">0</b><span>levels</span></div>
+    <div class="stat"><b id="statSources">0</b><span>sources</span></div>
   </div>
 </div>
+
+<div class="ticker" aria-hidden="true"><div class="ticker-track" id="tickerTrack"></div></div>
 
 <div class="levels">
   <div></div>
@@ -266,7 +279,7 @@ footer{margin-top:70px;padding-top:26px;border-top:1px solid var(--line);
 </div>
 
 <script>
-const CATS = [
+const CATS_FALLBACK = [
   {
     name:"BUILD SKILLS", note:"you make the thing",
     accent:"#8F86F0", line:"rgba(143,134,240,0.45)", text:"#B4ADF7",
@@ -388,53 +401,147 @@ const CATS = [
     ]
   }
 ];
+let CATS = CATS_FALLBACK;
+
+const DEFAULT_CLOUD_URL = "https://jhhzdnyjusufyhevczcr.supabase.co";
+const DEFAULT_CLOUD_KEY = "sb_publishable_03adw4CdXbkDmuLibVu_Zg_OIWne7gU";
 
 const esc = t => t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-
-const app = document.getElementById("app");
-app.innerHTML = CATS.map(cat => `
-  <section style="--accent:${cat.accent};--accent-line:${cat.line};--accent-text:${cat.text}">
-    <div class="cat"><b>${cat.name}</b><i>${cat.note}</i><span class="rule"></span></div>
-    ${cat.tracks.map(tr => `
-      <div class="row">
-        <div class="label">
-          <div class="chip">${tr.n}</div>
-          <h3>${esc(tr.name)}</h3>
-          <p>${esc(tr.sub)}</p>
-        </div>
-        ${tr.levels.map((lv,i) => `
-          <div class="card" style="--i:${i}">
-            <div class="bars">${[0,1,2].map(k => `<i class="${k<=i?"on":""}"></i>`).join("")}</div>
-            <ul>${lv.b.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
-            <div class="src">${lv.s.map(([label,url]) =>
-              url ? `<a href="${url}" target="_blank" rel="noopener">${esc(label)}</a>`
-                  : `<span>${esc(label)}</span>`).join("")}</div>
-          </div>`).join("")}
-      </div>`).join("")}
-  </section>`).join("");
-
-/* reveal on scroll */
-const io = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
-}, {threshold:0.15, rootMargin:"0px 0px -60px 0px"});
-document.querySelectorAll(".row").forEach(r => io.observe(r));
-
-/* pointer tilt + sheen */
 const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-if (!reduce) {
-  document.querySelectorAll(".card").forEach(card => {
-    card.addEventListener("pointermove", e => {
-      const r = card.getBoundingClientRect();
-      const px = (e.clientX - r.left) / r.width;
-      const py = (e.clientY - r.top) / r.height;
-      card.style.setProperty("--mx", (px*100)+"%");
-      card.style.setProperty("--my", (py*100)+"%");
-      card.style.transform =
-        `translateY(-6px) rotateX(${(0.5-py)*7}deg) rotateY(${(px-0.5)*8}deg) scale(1.015)`;
-    });
-    card.addEventListener("pointerleave", () => { card.style.transform = ""; });
-  });
+const app = document.getElementById("app");
+
+function catalogCounts(){
+  let tracks = 0, levels = 0, sources = 0;
+  CATS.forEach(cat => cat.tracks.forEach(tr => {
+    tracks++;
+    tr.levels.forEach(lv => { levels++; sources += lv.s.length; });
+  }));
+  return {tracks, levels, sources};
 }
+
+function animateCount(el, to, duration=900){
+  if (reduce) { el.textContent = to; return; }
+  const from = Number(el.textContent) || 0;
+  if (from === to) return;
+  const t0 = performance.now();
+  function tick(now){
+    const p = Math.min(1, (now - t0) / duration);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(from + (to - from) * eased);
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function updateStats(){
+  const {tracks, levels, sources} = catalogCounts();
+  animateCount(document.getElementById("statTracks"), tracks);
+  animateCount(document.getElementById("statLevels"), levels);
+  animateCount(document.getElementById("statSources"), sources);
+  document.getElementById("statusText").textContent = `${tracks} tracks · ${sources} free sources`;
+}
+
+function populateTicker(){
+  const names = CATS.flatMap(cat => cat.tracks.map(tr => ({name: tr.name, accent: cat.accent})));
+  const tick = list => list.map(t =>
+    `<span class="tick" style="--tick-accent:${t.accent}">${esc(t.name)}</span>`).join("");
+  document.getElementById("tickerTrack").innerHTML = tick(names) + tick(names);
+}
+
+function renderRoadmap(){
+  app.innerHTML = CATS.map(cat => `
+    <section style="--accent:${cat.accent};--accent-line:${cat.line};--accent-text:${cat.text}">
+      <div class="cat"><b>${cat.name}</b><i>${cat.note}</i><span class="rule"></span></div>
+      ${cat.tracks.map(tr => `
+        <div class="row">
+          <div class="label">
+            <div class="chip">${tr.n}</div>
+            <h3>${esc(tr.name)}</h3>
+            <p>${esc(tr.sub)}</p>
+          </div>
+          ${tr.levels.map((lv,i) => `
+            <div class="card" style="--i:${i}">
+              <div class="bars">${[0,1,2].map(k => `<i class="${k<=i?"on":""}"></i>`).join("")}</div>
+              <ul>${lv.b.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+              <div class="src">${lv.s.map(([label,url]) =>
+                url ? `<a href="${url}" target="_blank" rel="noopener">${esc(label)}</a>`
+                    : `<span>${esc(label)}</span>`).join("")}</div>
+            </div>`).join("")}
+        </div>`).join("")}
+    </section>`).join("");
+
+  /* reveal on scroll */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, {threshold:0.15, rootMargin:"0px 0px -60px 0px"});
+  document.querySelectorAll(".row").forEach(r => io.observe(r));
+
+  /* pointer tilt + sheen */
+  if (!reduce) {
+    document.querySelectorAll(".card").forEach(card => {
+      card.addEventListener("pointermove", e => {
+        const r = card.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width;
+        const py = (e.clientY - r.top) / r.height;
+        card.style.setProperty("--mx", (px*100)+"%");
+        card.style.setProperty("--my", (py*100)+"%");
+        card.style.transform =
+          `translateY(-6px) rotateX(${(0.5-py)*7}deg) rotateY(${(px-0.5)*8}deg) scale(1.015)`;
+      });
+      card.addEventListener("pointerleave", () => { card.style.transform = ""; });
+    });
+  }
+}
+
+/* ---------- catalog: render fallback instantly, then swap in live Supabase data ---------- */
+async function loadCatalogFromSupabase(){
+  try{
+    const mod = await import("https://esm.sh/@supabase/supabase-js@2");
+    const pub = mod.createClient(DEFAULT_CLOUD_URL, DEFAULT_CLOUD_KEY);
+    const [catsR, trackR, resR, topicR] = await Promise.all([
+      pub.from("categories").select("*").order("id"),
+      pub.from("tracks").select("*").order("n"),
+      pub.from("resources").select("*").order("track_id").order("level").order("position"),
+      pub.from("level_topics").select("*").order("track_id").order("level").order("position")
+    ]);
+    if (catsR.error) throw catsR.error;
+    if (trackR.error) throw trackR.error;
+    if (resR.error) throw resR.error;
+    if (topicR.error) throw topicR.error;
+    if (!catsR.data.length || !trackR.data.length) throw new Error("catalog tables are empty");
+
+    const trackShells = {};
+    trackR.data.forEach(t => { trackShells[t.id] = {n: t.n, name: t.name, sub: t.sub, levels: [{b:[],s:[]},{b:[],s:[]},{b:[],s:[]}]}; });
+    resR.data.forEach(r => {
+      const tr = trackShells[r.track_id];
+      if (tr) tr.levels[r.level].s.push([r.roadmap_label || r.title, r.url]);
+    });
+    topicR.data.forEach(t => {
+      const tr = trackShells[t.track_id];
+      if (tr) tr.levels[t.level].b.push(t.topic);
+    });
+
+    const cats = catsR.data.map(c => ({name: c.name, note: c.note, accent: c.accent, line: c.line, text: c.text_color, tracks: []}));
+    const catIndexById = {}; catsR.data.forEach((c,i) => { catIndexById[c.id] = i; });
+    trackR.data.forEach(t => cats[catIndexById[t.category_id]].tracks.push(trackShells[t.id]));
+    return cats;
+  }catch(e){
+    console.warn("Roadmap catalog fetch failed, using offline copy:", e.message || e);
+    return null;
+  }
+}
+
+renderRoadmap();
+updateStats();
+populateTicker();
+
+loadCatalogFromSupabase().then(remote => {
+  if (!remote) return;
+  CATS = remote;
+  renderRoadmap();
+  updateStats();
+  populateTicker();
+});
 </script>
 </body>
 </html>

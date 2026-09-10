@@ -335,7 +335,7 @@ footer{margin-top:70px;padding-top:26px;border-top:1px solid var(--line);
 </dialog>
 
 <script>
-const CATS=[
+const CATS_FALLBACK=[
   {name:"BUILD SKILLS",note:"you make the thing",accent:"#8F86F0",line:"rgba(143,134,240,0.30)",text:"#B4ADF7"},
   {name:"DATA AND ARCHITECTURE",note:"you shape how it works",accent:"#2CBE8F",line:"rgba(44,190,143,0.30)",text:"#5FD5AF"},
   {name:"DELIVERY SKILLS",note:"you get it shipped, with people",accent:"#E2703F",line:"rgba(226,112,63,0.30)",text:"#F09166"},
@@ -343,7 +343,7 @@ const CATS=[
 ];
 const LEVELS=["FOUNDATION","WORKING LEVEL","EXPERT"];
 const SUBS={"ServiceNow":"platform development","JavaScript and TypeScript":"the language of the web","Python":"scripting and data",".NET and C#":"enterprise backend","Cloud and DevOps":"where it actually runs","SQL and data":"query and model data","System design":"architecture, trade-offs","Security and identity":"no longer specialist","Business analysis":"requirements and process","Project management":"delivery and governance","Technical writing":"the invisible multiplier","AI":"working with models"};
-const SEED=[
+const SEED_FALLBACK=[
  {name:"ServiceNow",cat:0,L:[
   [["ServiceNow University — CSA learning path","https://learning.servicenow.com","course"],
    ["Personal Developer Instance — free","https://developer.servicenow.com","practice"],
@@ -465,8 +465,43 @@ const SEED=[
    ["Model Context Protocol","https://modelcontextprotocol.io","doc"],
    ["Anthropic cookbook","https://github.com/anthropics/anthropic-cookbook","practice"]]]}
 ];
+let CATS=CATS_FALLBACK, SEED=SEED_FALLBACK;
 
 const KEY="kms-library-v1", CFGKEY="kms-cloud-cfg";
+const DEFAULT_CLOUD_URL="https://jhhzdnyjusufyhevczcr.supabase.co";
+const DEFAULT_CLOUD_KEY="sb_publishable_03adw4CdXbkDmuLibVu_Zg_OIWne7gU";
+
+/* ---------- resource catalog, loaded from Supabase with a baked-in offline fallback ---------- */
+async function loadCatalog(){
+  try{
+    const mod=await import("https://esm.sh/@supabase/supabase-js@2");
+    const pub=mod.createClient(DEFAULT_CLOUD_URL,DEFAULT_CLOUD_KEY);
+    const [catsR,trackR,resR]=await Promise.all([
+      pub.from("categories").select("*").order("id"),
+      pub.from("tracks").select("*").order("n"),
+      pub.from("resources").select("*").order("track_id").order("level").order("position")
+    ]);
+    if(catsR.error)throw catsR.error;
+    if(trackR.error)throw trackR.error;
+    if(resR.error)throw resR.error;
+    if(!catsR.data.length||!trackR.data.length)throw new Error("catalog tables are empty");
+    const cats=catsR.data.map(c=>({name:c.name,note:c.note,accent:c.accent,line:c.line,text:c.text_color}));
+    const catIndexById={};catsR.data.forEach((c,i)=>{catIndexById[c.id]=i;});
+    const trackById={};
+    const seed=trackR.data.map(t=>{
+      const tr={name:t.name,cat:catIndexById[t.category_id],L:[[],[],[]]};
+      trackById[t.id]=tr;return tr;
+    });
+    resR.data.forEach(r=>{
+      const tr=trackById[r.track_id];
+      if(tr&&tr.L[r.level])tr.L[r.level].push([r.title,r.url,r.type]);
+    });
+    return {CATS:cats,SEED:seed};
+  }catch(e){
+    console.warn("Catalog fetch failed, using offline copy:",e.message||e);
+    return null;
+  }
+}
 let state={added:[],marks:{}};
 let filters={q:"",cat:"",st:""};
 const $=id=>document.getElementById(id);
@@ -731,7 +766,7 @@ function refreshCloudUi(){
 }
 $("btnCloud").addEventListener("click",()=>{
   const c=Cloud.cfg||{};
-  $("cUrl").value=c.url||"";$("cKey").value=c.key||"";$("cEmail").value=c.email||"";
+  $("cUrl").value=c.url||DEFAULT_CLOUD_URL;$("cKey").value=c.key||DEFAULT_CLOUD_KEY;$("cEmail").value=c.email||"";
   refreshCloudUi();$("dlgCloud").showModal();
 });
 $("cClose").addEventListener("click",()=>$("dlgCloud").close());
@@ -769,15 +804,24 @@ $("cSignout").addEventListener("click",async()=>{
 });
 
 /* ---------- boot ---------- */
-$("aSkill").innerHTML=SEED.map(s=>'<option>'+esc(s.name)+'</option>').join("");
 Store.detect();
 $("whereTxt").textContent="Saving to "+Store.label();
 if(Store.mode==="memory")$("led").classList.add("warn");
+
+$("aSkill").innerHTML=SEED.map(s=>'<option>'+esc(s.name)+'</option>').join("");
 
 (async function(){
   const local=await Store.load();
   if(local)state={added:local.added||[],marks:local.marks||{}};
   render();
+
+  loadCatalog().then(remote=>{
+    if(!remote)return;
+    CATS=remote.CATS;SEED=remote.SEED;
+    $("aSkill").innerHTML=SEED.map(s=>'<option>'+esc(s.name)+'</option>').join("");
+    render();
+  });
+
   const ok=await Cloud.init();
   if(ok&&Cloud.user){
     try{
