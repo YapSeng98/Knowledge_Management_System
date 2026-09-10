@@ -1,11 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-<defs>
-<linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-<stop offset="0%" stop-color="#8F86F0"/>
-<stop offset="55%" stop-color="#2CBE8F"/>
-<stop offset="100%" stop-color="#E2703F"/>
-</linearGradient>
-</defs>
-<rect x="1" y="1" width="30" height="30" rx="9" fill="url(#g)"/>
-<rect x="1" y="1" width="30" height="30" rx="9" fill="none" stroke="rgba(255,255,255,0.22)"/>
+<style>
+rect.bar{transform-box:fill-box;transform-origin:50% 100%;animation:pulse 1.4s ease-in-out infinite;}
+rect.bar.b1{animation-delay:0s;}
+rect.bar.b2{animation-delay:.15s;}
+rect.bar.b3{animation-delay:.3s;}
+@keyframes pulse{0%,100%{transform:scaleY(1);}50%{transform:scaleY(.5);}}
+@media (prefers-reduced-motion: reduce){rect.bar{animation:none;}}
+</style>
+<rect x="1" y="1" width="30" height="30" rx="8" fill="#0A0A0C"/>
+<rect x="1" y="1" width="30" height="30" rx="8" fill="none" stroke="rgba(255,255,255,0.1)"/>
+<rect class="bar b1" x="7" y="17" width="5" height="9" rx="2" fill="#8F86F0"/>
+<rect class="bar b2" x="14" y="11" width="5" height="15" rx="2" fill="#2CBE8F"/>
+<rect class="bar b3" x="21" y="6" width="5" height="20" rx="2" fill="#E2703F"/>
 </svg>
