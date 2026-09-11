@@ -889,8 +889,12 @@ $("cPush").addEventListener("click",async()=>{
   if(!(Cloud.ready&&Cloud.user)){toast("Connect first");return;}
   try{await Cloud.push(state);toast("Pushed to cloud");}catch(e){toast("Push failed: "+(e.message||e));}
 });
-$("cSignout").addEventListener("click",()=>{
-  Cloud.disconnect();allowedTrackIds=null;populateSkillDropdown();render();refreshCloudUi();toast("Disconnected");
+$("cSignout").addEventListener("click",async()=>{
+  Cloud.disconnect();
+  state={added:[],marks:{}};
+  await Store.save(state);
+  allowedTrackIds=null;
+  populateSkillDropdown();render();refreshCloudUi();toast("Disconnected");
 });
 
 /* ---------- boot ---------- */

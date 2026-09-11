@@ -717,6 +717,7 @@ document.getElementById("loginIn").addEventListener("click", async () => {
 });
 document.getElementById("loginOut").addEventListener("click", async () => {
   document.getElementById("loginEmail").value = "";
+  localStorage.removeItem("kms-library-v1");
   await applyLogin("");
   document.getElementById("dlgLogin").close();
 });
