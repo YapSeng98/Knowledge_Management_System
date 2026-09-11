@@ -180,6 +180,8 @@ section{margin-top:40px;}
 .src a,.src span{display:block;font-size:11.5px;line-height:1.6;color:var(--ink-3);text-decoration:none;
   word-break:break-word;transition:.18s;}
 .src a:hover{color:var(--accent-text);}
+.src b.mine{font-style:normal;font-weight:600;font-size:9.5px;letter-spacing:.5px;text-transform:uppercase;
+  color:var(--accent-text);opacity:.85;margin-left:5px;}
 
 /* library card body */
 .item{display:flex;align-items:flex-start;gap:9px;padding:7px 0;position:relative;z-index:2;}
@@ -463,9 +465,11 @@ function renderRoadmap(){
             <div class="card" style="--i:${i}">
               <div class="bars">${[0,1,2].map(k => `<i class="${k<=i?"on":""}"></i>`).join("")}</div>
               <ul>${lv.b.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
-              <div class="src">${lv.s.map(([label,url]) =>
-                url ? `<a href="${url}" target="_blank" rel="noopener">${esc(label)}</a>`
-                    : `<span>${esc(label)}</span>`).join("")}</div>
+              <div class="src">${lv.s.map(({label,url,mine,edited}) => {
+                const tag = mine ? ' <b class="mine">yours</b>' : edited ? ' <b class="mine">edited</b>' : '';
+                return url ? `<a href="${url}" target="_blank" rel="noopener">${esc(label)}${tag}</a>`
+                           : `<span>${esc(label)}${tag}</span>`;
+              }).join("")}</div>
             </div>`).join("")}
         </div>`).join("")}
     </section>`).join("");
@@ -493,11 +497,20 @@ function renderRoadmap(){
   }
 }
 
+/* ---------- one shared Supabase client (avoids "Multiple GoTrueClient instances" warnings/bugs) ---------- */
+let _sbClientPromise = null;
+function getSbClient(){
+  if (!_sbClientPromise){
+    _sbClientPromise = import("https://esm.sh/@supabase/supabase-js@2")
+      .then(mod => mod.createClient(DEFAULT_CLOUD_URL, DEFAULT_CLOUD_KEY));
+  }
+  return _sbClientPromise;
+}
+
 /* ---------- catalog: render fallback instantly, then swap in live Supabase data ---------- */
 async function loadCatalogFromSupabase(){
   try{
-    const mod = await import("https://esm.sh/@supabase/supabase-js@2");
-    const pub = mod.createClient(DEFAULT_CLOUD_URL, DEFAULT_CLOUD_KEY);
+    const pub = await getSbClient();
     const [catsR, trackR, resR, topicR] = await Promise.all([
       pub.from("categories").select("*").order("id"),
       pub.from("tracks").select("*").order("n"),
@@ -531,16 +544,97 @@ async function loadCatalogFromSupabase(){
   }
 }
 
-renderRoadmap();
-updateStats();
-populateTicker();
+/* ---------- fold in this person's own library.html state: added resources AND
+   edits made to catalog resources. Prefer Supabase (syncs across devices, once
+   signed in via the library page's Cloud sync) over this browser's local copy
+   (device-only, always available). Both "added" and "marks[id].edit" travel
+   through the exact same save()/Cloud.push() path in library.html, so whichever
+   source we read here already carries both kinds of update. ---------- */
+function localPersonalState(){
+  try{
+    const local = JSON.parse(localStorage.getItem("kms-library-v1"));
+    return {added: (local && local.added) || [], marks: (local && local.marks) || {}};
+  }catch(e){ return {added: [], marks: {}}; }
+}
+async function cloudPersonalStateIfSignedIn(){
+  try{
+    const pub = await getSbClient();
+    const sessionR = await pub.auth.getSession();
+    const user = sessionR.data && sessionR.data.session ? sessionR.data.session.user : null;
+    if (!user) return null;
+    const r = await pub.from("library_state").select("state").eq("user_id", user.id).maybeSingle();
+    if (r.error || !r.data || !r.data.state) return null;
+    return {added: r.data.state.added || [], marks: r.data.state.marks || {}};
+  }catch(e){
+    console.warn("Cross-device personal sync check failed:", e.message || e);
+    return null;
+  }
+}
 
-loadCatalogFromSupabase().then(remote => {
-  if (!remote) return;
-  CATS = remote;
+let personalState = localPersonalState();
+
+function withPersonalItems(baseCats){
+  const marks = personalState.marks || {};
+  let gi = -1;
+  const cloned = baseCats.map(cat => ({...cat, tracks: cat.tracks.map(tr => {
+    const ti = ++gi;
+    return {...tr, levels: tr.levels.map((lv,li) => ({
+      b: lv.b.slice(),
+      s: lv.s.map(([label,url],pi) => {
+        const ov = marks["s"+ti+"-"+li+"-"+pi] && marks["s"+ti+"-"+li+"-"+pi].edit;
+        return ov ? {label: ov.title, url: ov.url, edited: true, moveTo: {cat: ov.cat, skill: ov.skill, level: ov.level}}
+                   : {label, url};
+      })
+    }))};
+  })}));
+
+  // an edit that changed skill/level should actually relocate the card, not
+  // just relabel it where it started -- match library.html's own behaviour.
+  const relocations = [];
+  cloned.forEach(cat => cat.tracks.forEach(tr => tr.levels.forEach((lv,li) => {
+    lv.s = lv.s.filter(entry => {
+      if (!entry.moveTo) return true;
+      const sameSpot = cat === cloned[entry.moveTo.cat] && tr.name === entry.moveTo.skill && li === entry.moveTo.level;
+      if (sameSpot) return true;
+      relocations.push(entry);
+      return false;
+    });
+  })));
+  relocations.forEach(entry => {
+    const targetCat = cloned[entry.moveTo.cat];
+    const targetTrack = targetCat && targetCat.tracks.find(t => t.name === entry.moveTo.skill);
+    if (targetTrack && targetTrack.levels[entry.moveTo.level]){
+      targetTrack.levels[entry.moveTo.level].s.push({label: entry.label, url: entry.url, edited: true});
+    }
+  });
+
+  (personalState.added || []).forEach(a => {
+    const cat = cloned[a.cat];
+    if (!cat) return;
+    const tr = cat.tracks.find(t => t.name === a.skill);
+    if (!tr || !tr.levels[a.level]) return;
+    tr.levels[a.level].s.push({label: a.title, url: a.url, mine: true});
+  });
+  return cloned;
+}
+function refreshView(baseCats){
+  CATS = withPersonalItems(baseCats);
   renderRoadmap();
   updateStats();
   populateTicker();
+}
+
+refreshView(CATS_FALLBACK);
+
+loadCatalogFromSupabase().then(remote => {
+  if (!remote) return;
+  refreshView(remote);
+});
+
+cloudPersonalStateIfSignedIn().then(cloudState => {
+  if (cloudState === null) return; // not signed in here -- keep the local-only copy
+  personalState = cloudState;
+  refreshView(CATS);
 });
 </script>
 </body>
