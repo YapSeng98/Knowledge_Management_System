@@ -321,18 +321,15 @@ footer{margin-top:70px;padding-top:26px;border-top:1px solid var(--line);
 <dialog id="dlgCloud">
   <h3>Cloud sync</h3>
   <div class="status" id="cloudStatus">Not connected. Data is saved locally only.</div>
-  <p>Paste your Supabase project URL and anon key. Create an account with a password once, then sign in with that password on any device — no email step needed after the first time. The anon key is safe to store here — row level security is what protects the data.</p>
+  <p>Paste your Supabase project URL and anon key, enter your email, and press Connect. No password, no confirmation email — this device (and any other you enter the same email on) will read and write the same data. The anon key is safe to store here.</p>
   <input id="cUrl" placeholder="https://xxxxxxxx.supabase.co">
   <input id="cKey" placeholder="anon public key">
   <input id="cEmail" type="email" placeholder="your@email.com">
-  <input id="cPassword" type="password" placeholder="password (6+ characters)">
   <div class="dlgbtns">
-    <button id="cSignout" class="ghost">Sign out</button>
+    <button id="cSignout" class="ghost">Disconnect</button>
     <button id="cPull">Pull from cloud</button>
     <button id="cPush">Push to cloud</button>
-    <button id="cMagicLink" class="ghost">Email link instead</button>
-    <button id="cSignUp">Create account</button>
-    <button class="primary" id="cSignIn">Sign in</button>
+    <button class="primary" id="cConnect">Connect</button>
     <button id="cClose">Close</button>
   </div>
 </dialog>
@@ -537,7 +534,12 @@ const Store={
   }
 };
 
-/* ---------- optional Supabase sync ---------- */
+/* ---------- optional Supabase sync ----------
+   Keyed by plain email, no Supabase Auth account involved: whoever enters a
+   given email on this dialog reads and writes that email's row. There is no
+   password and no verification step -- deliberately, by request, for a
+   personal low-stakes reading-list app. Do not reuse this pattern for
+   anything where that tradeoff wouldn't be fine. ---------- */
 const Cloud={
   cfg:null, sb:null, user:null, ready:false,
   readCfg(){try{return JSON.parse(localStorage.getItem(CFGKEY)||"null");}catch(e){return null;}},
@@ -548,39 +550,33 @@ const Cloud={
     try{
       const mod=await import("https://esm.sh/@supabase/supabase-js@2");
       this.sb=mod.createClient(this.cfg.url,this.cfg.key);
-      const r=await this.sb.auth.getSession();
-      this.user=r.data&&r.data.session?r.data.session.user:null;
+      this.user=this.cfg.email?{email:this.cfg.email}:null;
       this.ready=true;
       return true;
     }catch(e){this.err=e.message||String(e);return false;}
   },
-  async sendLink(email){
-    return this.sb.auth.signInWithOtp({email:email,options:{emailRedirectTo:location.href.split("#")[0]}});
+  connect(email){
+    this.user={email:email};
+    this.writeCfg(Object.assign({},this.cfg,{email:email}));
   },
-  async signUpPassword(email,password){
-    const r=await this.sb.auth.signUp({email:email,password:password});
-    if(r.data&&r.data.session)this.user=r.data.session.user;
-    return r;
-  },
-  async signInPassword(email,password){
-    const r=await this.sb.auth.signInWithPassword({email:email,password:password});
-    if(r.data&&r.data.session)this.user=r.data.session.user;
-    return r;
+  disconnect(){
+    this.user=null;
+    this.writeCfg(Object.assign({},this.cfg,{email:""}));
   },
   async pull(){
-    const r=await this.sb.from("library_state").select("state").eq("user_id",this.user.id).maybeSingle();
+    const r=await this.sb.from("library_state").select("state").eq("email",this.user.email).maybeSingle();
     if(r.error)throw r.error;
     return r.data?r.data.state:null;
   },
   async push(s){
-    const r=await this.sb.from("library_state").upsert({user_id:this.user.id,state:s,updated_at:new Date().toISOString()});
+    const r=await this.sb.from("library_state").upsert({email:this.user.email,state:s,updated_at:new Date().toISOString()});
     if(r.error)throw r.error;
   },
   status(){
     if(!this.cfg||!this.cfg.url)return "Not connected. Data is saved locally only.";
     if(this.err)return "Could not reach Supabase: "+this.err;
-    if(!this.user)return "Connected to the project, but not signed in. Enter your email and a password, then Sign in (or Create account the first time).";
-    return "Signed in as "+this.user.email+". Changes sync automatically.";
+    if(!this.user)return "Connected to the project. Enter your email and press Connect.";
+    return "Connected as "+this.user.email+". Changes sync automatically.";
   }
 };
 
@@ -836,53 +832,27 @@ function refreshCloudUi(){
 $("btnCloud").addEventListener("click",()=>{
   const c=Cloud.cfg||{};
   $("cUrl").value=c.url||DEFAULT_CLOUD_URL;$("cKey").value=c.key||DEFAULT_CLOUD_KEY;$("cEmail").value=c.email||"";
-  $("cPassword").value="";
   refreshCloudUi();$("dlgCloud").showModal();
 });
 $("cClose").addEventListener("click",()=>$("dlgCloud").close());
-async function ensureConnected(){
+$("cConnect").addEventListener("click",async()=>{
   const url=$("cUrl").value.trim(), key=$("cKey").value.trim(), email=$("cEmail").value.trim();
-  if(!url||!key){toast("Project URL and anon key are both needed");return false;}
+  if(!url||!key||!email){toast("Project URL, anon key and email are all needed");return;}
   Cloud.writeCfg({url:url,key:key,email:email});
   Cloud.err=null;
   $("cloudStatus").textContent="Connecting…";
   const ok=await Cloud.init();
-  if(!ok)refreshCloudUi();
-  return ok;
-}
-$("cSignUp").addEventListener("click",async()=>{
-  const email=$("cEmail").value.trim(), password=$("cPassword").value;
-  if(!email||!password){toast("Email and password are both needed");return;}
-  if(password.length<6){toast("Password needs to be at least 6 characters");return;}
-  if(!(await ensureConnected()))return;
+  if(!ok){refreshCloudUi();return;}
+  Cloud.connect(email);
   try{
-    const r=await Cloud.signUpPassword(email,password);
-    if(r.error)$("cloudStatus").textContent="Could not create account: "+r.error.message;
-    else if(Cloud.user)refreshCloudUi();
-    else $("cloudStatus").textContent="Account created. Check your email once to confirm it, then Sign in.";
-  }catch(e){$("cloudStatus").textContent="Could not create account: "+(e.message||e);}
-});
-$("cSignIn").addEventListener("click",async()=>{
-  const email=$("cEmail").value.trim(), password=$("cPassword").value;
-  if(!email||!password){toast("Email and password are both needed");return;}
-  if(!(await ensureConnected()))return;
-  try{
-    const r=await Cloud.signInPassword(email,password);
-    if(r.error)$("cloudStatus").textContent="Could not sign in: "+r.error.message;
-    else refreshCloudUi();
-  }catch(e){$("cloudStatus").textContent="Could not sign in: "+(e.message||e);}
-});
-$("cMagicLink").addEventListener("click",async()=>{
-  const email=$("cEmail").value.trim();
-  if(!email){toast("Add your email first");return;}
-  if(!(await ensureConnected()))return;
-  try{
-    const r=await Cloud.sendLink(email);
-    $("cloudStatus").textContent=r.error?("Could not send link: "+r.error.message):("Magic link sent to "+email+". Open it on this device.");
-  }catch(e){$("cloudStatus").textContent="Could not send link: "+(e.message||e);}
+    const remote=await Cloud.pull();
+    if(remote){state={added:remote.added||[],marks:remote.marks||{}};await Store.save(state);render();}
+    else await Cloud.push(state);
+    refreshCloudUi();
+  }catch(e){$("cloudStatus").textContent="Connected, but sync failed: "+(e.message||e);}
 });
 $("cPull").addEventListener("click",async()=>{
-  if(!(Cloud.ready&&Cloud.user)){toast("Sign in first");return;}
+  if(!(Cloud.ready&&Cloud.user)){toast("Connect first");return;}
   try{
     const s=await Cloud.pull();
     if(!s){toast("Nothing stored in the cloud yet");return;}
@@ -891,11 +861,11 @@ $("cPull").addEventListener("click",async()=>{
   }catch(e){toast("Pull failed: "+(e.message||e));}
 });
 $("cPush").addEventListener("click",async()=>{
-  if(!(Cloud.ready&&Cloud.user)){toast("Sign in first");return;}
+  if(!(Cloud.ready&&Cloud.user)){toast("Connect first");return;}
   try{await Cloud.push(state);toast("Pushed to cloud");}catch(e){toast("Push failed: "+(e.message||e));}
 });
-$("cSignout").addEventListener("click",async()=>{
-  if(Cloud.sb){await Cloud.sb.auth.signOut();Cloud.user=null;refreshCloudUi();toast("Signed out");}
+$("cSignout").addEventListener("click",()=>{
+  Cloud.disconnect();refreshCloudUi();toast("Disconnected");
 });
 
 /* ---------- boot ---------- */

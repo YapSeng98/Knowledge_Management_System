@@ -558,11 +558,11 @@ function localPersonalState(){
 }
 async function cloudPersonalStateIfSignedIn(){
   try{
+    let cfg;
+    try{ cfg = JSON.parse(localStorage.getItem("kms-cloud-cfg")); }catch(e){}
+    if (!cfg || !cfg.email) return null;
     const pub = await getSbClient();
-    const sessionR = await pub.auth.getSession();
-    const user = sessionR.data && sessionR.data.session ? sessionR.data.session.user : null;
-    if (!user) return null;
-    const r = await pub.from("library_state").select("state").eq("user_id", user.id).maybeSingle();
+    const r = await pub.from("library_state").select("state").eq("email", cfg.email).maybeSingle();
     if (r.error || !r.data || !r.data.state) return null;
     return {added: r.data.state.added || [], marks: r.data.state.marks || {}};
   }catch(e){
