@@ -221,6 +221,10 @@ footer{margin-top:70px;padding-top:26px;border-top:1px solid var(--line);
   .stats{gap:26px;}
   .tinner,.wrap{padding-left:18px;padding-right:18px;}
   .grid5{grid-template-columns:1fr 1fr;}
+  .tinner{flex-wrap:wrap;height:auto;gap:10px;padding-top:12px;padding-bottom:12px;}
+}
+@media(max-width:480px){
+  .grid5{grid-template-columns:1fr;}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}.card{opacity:1!important;}}
 </style>
@@ -505,6 +509,15 @@ async function loadCatalog(){
 let state={added:[],marks:{}};
 let filters={q:"",cat:"",st:""};
 let editingId=null;
+let allowedTrackIds=null;
+async function allowedTrackIdsIfAny(email){
+  if(!email)return null;
+  try{
+    const r=await Cloud.sb.from("access_grants").select("track_id").eq("email",email);
+    if(r.error||!r.data||!r.data.length)return null;
+    return new Set(r.data.map(row=>row.track_id));
+  }catch(e){console.warn("Access grants check failed:",e.message||e);return null;}
+}
 const $=id=>document.getElementById(id);
 const esc=t=>String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove("show"),2600);}
@@ -595,13 +608,22 @@ function save(){
 /* ---------- data ---------- */
 function allItems(){
   const out=[];
-  SEED.forEach((sk,si)=>sk.L.forEach((lv,li)=>lv.forEach((r,ri)=>{
-    const id="s"+si+"-"+li+"-"+ri;
-    const base={id:id,skill:sk.name,cat:sk.cat,level:li,title:r[0],url:r[1],type:r[2],mine:false};
-    const ov=(state.marks[id]||{}).edit;
-    out.push(ov?Object.assign({},base,ov):base);
-  })));
-  state.added.forEach(a=>out.push(Object.assign({},a,{mine:true})));
+  SEED.forEach((sk,si)=>{
+    if(allowedTrackIds&&!allowedTrackIds.has(si))return;
+    sk.L.forEach((lv,li)=>lv.forEach((r,ri)=>{
+      const id="s"+si+"-"+li+"-"+ri;
+      const base={id:id,skill:sk.name,cat:sk.cat,level:li,title:r[0],url:r[1],type:r[2],mine:false};
+      const ov=(state.marks[id]||{}).edit;
+      out.push(ov?Object.assign({},base,ov):base);
+    }));
+  });
+  state.added.forEach(a=>{
+    if(allowedTrackIds){
+      const si=SEED.findIndex(s=>s.name===a.skill);
+      if(si>=0&&!allowedTrackIds.has(si))return;
+    }
+    out.push(Object.assign({},a,{mine:true}));
+  });
   return out;
 }
 function passes(it){
@@ -846,8 +868,11 @@ $("cConnect").addEventListener("click",async()=>{
   Cloud.connect(email);
   try{
     const remote=await Cloud.pull();
-    if(remote){state={added:remote.added||[],marks:remote.marks||{}};await Store.save(state);render();}
+    if(remote){state={added:remote.added||[],marks:remote.marks||{}};await Store.save(state);}
     else await Cloud.push(state);
+    allowedTrackIds=await allowedTrackIdsIfAny(email);
+    populateSkillDropdown();
+    render();
     refreshCloudUi();
   }catch(e){$("cloudStatus").textContent="Connected, but sync failed: "+(e.message||e);}
 });
@@ -865,7 +890,7 @@ $("cPush").addEventListener("click",async()=>{
   try{await Cloud.push(state);toast("Pushed to cloud");}catch(e){toast("Push failed: "+(e.message||e));}
 });
 $("cSignout").addEventListener("click",()=>{
-  Cloud.disconnect();refreshCloudUi();toast("Disconnected");
+  Cloud.disconnect();allowedTrackIds=null;populateSkillDropdown();render();refreshCloudUi();toast("Disconnected");
 });
 
 /* ---------- boot ---------- */
@@ -873,7 +898,11 @@ Store.detect();
 $("whereTxt").textContent="Saving to "+Store.label();
 if(Store.mode==="memory")$("led").classList.add("warn");
 
-$("aSkill").innerHTML=SEED.map(s=>'<option>'+esc(s.name)+'</option>').join("");
+function populateSkillDropdown(){
+  const names=SEED.filter((s,si)=>!allowedTrackIds||allowedTrackIds.has(si)).map(s=>s.name);
+  $("aSkill").innerHTML=names.map(n=>'<option>'+esc(n)+'</option>').join("");
+}
+populateSkillDropdown();
 
 (async function(){
   const local=await Store.load();
@@ -883,7 +912,7 @@ $("aSkill").innerHTML=SEED.map(s=>'<option>'+esc(s.name)+'</option>').join("");
   loadCatalog().then(remote=>{
     if(!remote)return;
     CATS=remote.CATS;SEED=remote.SEED;
-    $("aSkill").innerHTML=SEED.map(s=>'<option>'+esc(s.name)+'</option>').join("");
+    populateSkillDropdown();
     render();
   });
 
@@ -891,8 +920,11 @@ $("aSkill").innerHTML=SEED.map(s=>'<option>'+esc(s.name)+'</option>').join("");
   if(ok&&Cloud.user){
     try{
       const remote=await Cloud.pull();
-      if(remote){state={added:remote.added||[],marks:remote.marks||{}};await Store.save(state);render();}
+      if(remote){state={added:remote.added||[],marks:remote.marks||{}};await Store.save(state);}
       else await Cloud.push(state);
+      allowedTrackIds=await allowedTrackIdsIfAny(Cloud.user.email);
+      populateSkillDropdown();
+      render();
     }catch(e){toast("Cloud read failed: "+(e.message||e));}
   }
   refreshCloudUi();
