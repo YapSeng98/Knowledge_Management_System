@@ -284,7 +284,8 @@ footer{margin-top:70px;padding-top:26px;border-top:1px solid var(--line);
   <div class="grid5">
     <input id="aTitle" placeholder="Title, e.g. Kubernetes basics course">
     <input id="aUrl" placeholder="https://… (optional)">
-    <select id="aSkill"></select>
+    <input id="aSkill" list="skillList" placeholder="skill / track">
+    <datalist id="skillList"></datalist>
     <select id="aLevel"><option value="0">Foundation</option><option value="1">Working</option><option value="2">Expert</option></select>
     <input id="aType" list="typeList" placeholder="type, e.g. doc" value="doc">
     <datalist id="typeList"><option>doc</option><option>course</option><option>video</option><option>practice</option><option>book</option><option>site</option></datalist>
@@ -905,7 +906,8 @@ if(Store.mode==="memory")$("led").classList.add("warn");
 
 function populateSkillDropdown(){
   const names=SEED.filter((s,si)=>!allowedTrackIds||allowedTrackIds.has(si)).map(s=>s.name);
-  $("aSkill").innerHTML=names.map(n=>'<option>'+esc(n)+'</option>').join("");
+  $("skillList").innerHTML=names.map(n=>'<option>'+esc(n)+'</option>').join("");
+  if(!$("aSkill").value&&names.length)$("aSkill").value=names[0];
 }
 populateSkillDropdown();
 

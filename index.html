@@ -655,14 +655,22 @@ function withPersonalItems(baseCats){
   (personalState.added || []).forEach(a => {
     const cat = cloned[a.cat];
     if (!cat) return;
-    const tr = cat.tracks.find(t => t.name === a.skill);
-    if (!tr || !tr.levels[a.level]) return;
+    let tr = cat.tracks.find(t => t.name === a.skill);
+    if (!tr){
+      tr = {n: "+", name: a.skill, sub: "your own track", custom: true,
+            levels: [{b:[],s:[]},{b:[],s:[]},{b:[],s:[]}]};
+      cat.tracks.push(tr);
+    }
+    if (!tr.levels[a.level]) return;
     tr.levels[a.level].s.push({label: a.title, url: a.url, mine: true});
   });
 
   if (allowedTrackIds){
     let ti2 = -1;
-    cloned.forEach(cat => { cat.tracks = cat.tracks.filter(() => { ti2++; return allowedTrackIds.has(ti2); }); });
+    cloned.forEach(cat => { cat.tracks = cat.tracks.filter(tr => {
+      if (tr.custom) return true; // your own track, not part of the restricted catalog
+      ti2++; return allowedTrackIds.has(ti2);
+    }); });
     return cloned.filter(cat => cat.tracks.length);
   }
   return cloned;
