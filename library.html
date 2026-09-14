@@ -907,7 +907,6 @@ if(Store.mode==="memory")$("led").classList.add("warn");
 function populateSkillDropdown(){
   const names=SEED.filter((s,si)=>!allowedTrackIds||allowedTrackIds.has(si)).map(s=>s.name);
   $("skillList").innerHTML=names.map(n=>'<option>'+esc(n)+'</option>').join("");
-  if(!$("aSkill").value&&names.length)$("aSkill").value=names[0];
 }
 populateSkillDropdown();
 
