@@ -247,7 +247,7 @@ footer{margin-top:70px;padding-top:26px;border-top:1px solid var(--line);
   <div>
     <div class="eyebrow">Working set</div>
     <h1>Resource library</h1>
-    <p class="lede">The same twelve tracks, but every source is something you can tick off, star, annotate or add to. Progress saves automatically.</p>
+    <p class="lede">The same tracks as the roadmap, but every source is something you can tick off, star, annotate or add to. Progress saves automatically.</p>
   </div>
   <div class="stats">
     <div class="stat"><b id="hDone">0</b><span>done</span></div>
@@ -264,6 +264,7 @@ footer{margin-top:70px;padding-top:26px;border-top:1px solid var(--line);
     <option value="1">Data and architecture</option>
     <option value="2">Delivery skills</option>
     <option value="3">Cross-cutting</option>
+    <option value="4">Money and markets</option>
   </select>
   <div class="pills" id="fState">
     <button class="pill on" data-s="">Everything</button>
@@ -345,10 +346,11 @@ const CATS_FALLBACK=[
   {name:"BUILD SKILLS",note:"you make the thing",accent:"#8F86F0",line:"rgba(143,134,240,0.30)",text:"#B4ADF7"},
   {name:"DATA AND ARCHITECTURE",note:"you shape how it works",accent:"#2CBE8F",line:"rgba(44,190,143,0.30)",text:"#5FD5AF"},
   {name:"DELIVERY SKILLS",note:"you get it shipped, with people",accent:"#E2703F",line:"rgba(226,112,63,0.30)",text:"#F09166"},
-  {name:"CROSS-CUTTING",note:"multiplies every track above",accent:"#DE6392",line:"rgba(222,99,146,0.30)",text:"#EE8CB0"}
+  {name:"CROSS-CUTTING",note:"multiplies every track above",accent:"#DE6392",line:"rgba(222,99,146,0.30)",text:"#EE8CB0"},
+  {name:"MONEY AND MARKETS",note:"you understand it, grow it, protect it",accent:"#D9A036",line:"rgba(217,160,54,0.30)",text:"#F0C169"}
 ];
 const LEVELS=["FOUNDATION","WORKING LEVEL","EXPERT"];
-const SUBS={"ServiceNow":"platform development","JavaScript and TypeScript":"the language of the web","Python":"scripting and data",".NET and C#":"enterprise backend","Cloud and DevOps":"where it actually runs","SQL and data":"query and model data","System design":"architecture, trade-offs","Security and identity":"no longer specialist","Business analysis":"requirements and process","Project management":"delivery and governance","Technical writing":"the invisible multiplier","AI":"working with models"};
+const SUBS={"ServiceNow":"platform development","JavaScript and TypeScript":"the language of the web","Python":"scripting and data",".NET and C#":"enterprise backend","Cloud and DevOps":"where it actually runs","SQL and data":"query and model data","System design":"architecture, trade-offs","Security and identity":"no longer specialist","Business analysis":"requirements and process","Project management":"delivery and governance","Technical writing":"the invisible multiplier","AI":"working with models","Trading":"reading markets, managing risk","Finance":"money, understood and grown"};
 const SEED_FALLBACK=[
  {name:"ServiceNow",cat:0,L:[
   [["ServiceNow University — CSA learning path","https://learning.servicenow.com","course"],
@@ -469,7 +471,27 @@ const SEED_FALLBACK=[
    ["Your own saved prompts, refined over time",null,"practice"]],
   [["Claude API documentation","https://docs.claude.com","doc"],
    ["Model Context Protocol","https://modelcontextprotocol.io","doc"],
-   ["Anthropic cookbook","https://github.com/anthropics/anthropic-cookbook","practice"]]]}
+   ["Anthropic cookbook","https://github.com/anthropics/anthropic-cookbook","practice"]]]},
+ {name:"Trading",cat:4,L:[
+  [["Investopedia — how the stock market works","https://www.investopedia.com/trading-4427765","course"],
+   ["Babypips — School of Pipsology, free and thorough","https://www.babypips.com/learn/forex","course"],
+   ["Investor.gov — SEC guide to markets","https://www.investor.gov","doc"]],
+  [["TradingView — free charting and strategy scripts","https://www.tradingview.com","practice"],
+   ["Investopedia Simulator — free paper trading","https://www.investopedia.com/simulator/","practice"],
+   ["SEC EDGAR — free company filings, straight from source","https://www.sec.gov/edgar/search/","doc"]],
+  [["CBOE Options Institute — free options education","https://www.cboe.com/optionsinstitute/","course"],
+   ["QuantConnect — free algorithmic trading and backtesting","https://www.quantconnect.com","practice"],
+   ["Van Tharp Institute — free position sizing and risk articles","https://www.vantharp.com/free-articles/","site"]]]},
+ {name:"Finance",cat:4,L:[
+  [["Khan Academy — personal finance course, free","https://www.khanacademy.org/college-careers-more/personal-finance","course"],
+   ["Investopedia — financial basics explained","https://www.investopedia.com","site"],
+   ["MoneySense — Singapore's national financial literacy programme","https://www.moneysense.gov.sg","site"]],
+  [["Bogleheads wiki — free index investing guide","https://www.bogleheads.org/wiki/Main_Page","book"],
+   ["Corporate Finance Institute — free resources and guides","https://corporatefinanceinstitute.com/resources/","site"],
+   ["Investor.gov — SEC free investing basics","https://www.investor.gov","doc"]],
+  [["Damodaran Online — free valuation courses and spreadsheets","http://pages.stern.nyu.edu/~adamodar/","course"],
+   ["CFA Institute Research Foundation — free publications","https://rpc.cfainstitute.org/research/foundation","book"],
+   ["Corporate Finance Institute — free courses","https://corporatefinanceinstitute.com/resources/","course"]]]}
 ];
 let CATS=CATS_FALLBACK, SEED=SEED_FALLBACK;
 

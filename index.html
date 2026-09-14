@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Twelve roadmaps — beginner to expert</title>
+<title>Fourteen roadmaps — beginner to expert</title>
 <link rel="icon" type="image/svg+xml" href="./favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -280,7 +280,7 @@ footer{margin-top:70px;padding-top:26px;border-top:1px solid var(--line);
   <div>
     <div class="eyebrow">Learning system</div>
     <h1>Start today,<br>better tomorrow</h1>
-    <p class="lede">Twelve roadmaps, one lane per skill, grouped by what the skill is actually for. Every source listed is free. Run two tracks at a time, never more.</p>
+    <p class="lede">One lane per skill, grouped by what the skill is actually for. Every source listed is free. Run two tracks at a time, never more.</p>
   </div>
   <div class="stats">
     <div class="stat"><b id="statTracks">0</b><span>tracks</span></div>
@@ -300,7 +300,7 @@ footer{margin-top:70px;padding-top:26px;border-top:1px solid var(--line);
 
 <div id="app"></div>
 
-<footer>Twelve tracks at expert level is roughly a decade of work. This is a menu, not a plan &mdash; the two-at-a-time rule is what keeps it honest.<br>Learning is free throughout; exams are not. CSA, CAD, PMP, cloud certifications and the Scrum assessments all charge separately.</footer>
+<footer>Fourteen tracks at expert level is roughly a decade of work. This is a menu, not a plan &mdash; the two-at-a-time rule is what keeps it honest.<br>Learning is free throughout; exams are not. CSA, CAD, PMP, cloud certifications, the Scrum assessments and the CFA charter all charge separately.</footer>
 
 </div>
 
@@ -423,6 +423,28 @@ const CATS_FALLBACK = [
          s:[["docs.claude.com — prompt engineering guide","https://docs.claude.com"],["github.com/anthropics/anthropic-cookbook","https://github.com/anthropics/anthropic-cookbook"],["Your own saved prompts, refined over time",null]]},
         {b:["API and SDK; batch workflows","Tool use, MCP, retrieval over your docs","Evaluation; where automation does not belong"],
          s:[["docs.claude.com — API documentation","https://docs.claude.com"],["modelcontextprotocol.io","https://modelcontextprotocol.io"],["github.com/anthropics/anthropic-cookbook","https://github.com/anthropics/anthropic-cookbook"]]}
+      ]}
+    ]
+  },
+  {
+    name:"MONEY AND MARKETS", note:"you understand it, grow it, protect it",
+    accent:"#D9A036", line:"rgba(217,160,54,0.45)", text:"#F0C169",
+    tracks:[
+      {n:13,name:"Trading",sub:"reading markets, managing risk",levels:[
+        {b:["Order types, bid/ask spread, market mechanics","Candlestick charts, support/resistance, volume","Risk per trade, position sizing, stop-losses"],
+         s:[["investopedia.com — how the market works","https://www.investopedia.com/trading-4427765"],["babypips.com — School of Pipsology, free","https://www.babypips.com/learn/forex"],["investor.gov — SEC markets guide","https://www.investor.gov"]]},
+        {b:["Technical analysis: trend lines, moving averages, RSI/MACD","Reading earnings reports, sector rotation, macro calendar","Backtesting a strategy; trading journal discipline"],
+         s:[["tradingview.com — free charting","https://www.tradingview.com"],["investopedia.com — free simulator","https://www.investopedia.com/simulator/"],["sec.gov/edgar — company filings","https://www.sec.gov/edgar/search/"]]},
+        {b:["Options basics: calls, puts, the Greeks, hedging","Market microstructure, order flow, liquidity","Portfolio-level risk: correlation, drawdown, Kelly criterion"],
+         s:[["cboe.com/optionsinstitute — free options education","https://www.cboe.com/optionsinstitute/"],["quantconnect.com — free algo trading","https://www.quantconnect.com"],["vantharp.com — free risk articles","https://www.vantharp.com/free-articles/"]]}
+      ]},
+      {n:14,name:"Finance",sub:"money, understood and grown",levels:[
+        {b:["Budgeting, emergency funds, debt payoff order","Compound interest, inflation, time value of money","Reading a payslip, taxes, basic insurance"],
+         s:[["khanacademy.org — personal finance, free","https://www.khanacademy.org/college-careers-more/personal-finance"],["investopedia.com — financial basics","https://www.investopedia.com"],["moneysense.gov.sg — SG financial literacy","https://www.moneysense.gov.sg"]]},
+        {b:["Stocks, bonds, ETFs, diversification, asset allocation","Reading financial statements: income, balance sheet, cash flow","Retirement accounts, compounding growth, dollar-cost averaging"],
+         s:[["bogleheads.org — free index investing wiki","https://www.bogleheads.org/wiki/Main_Page"],["corporatefinanceinstitute.com — free resources","https://corporatefinanceinstitute.com/resources/"],["investor.gov — SEC investing basics","https://www.investor.gov"]]},
+        {b:["Valuation: DCF, comparable companies, precedent transactions","Financial modeling in Excel; FP&A and budgeting cycles","CFA-level topics: portfolio theory, risk-adjusted returns"],
+         s:[["pages.stern.nyu.edu/~adamodar — free valuation courses","http://pages.stern.nyu.edu/~adamodar/"],["rpc.cfainstitute.org — free research","https://rpc.cfainstitute.org/research/foundation"],["corporatefinanceinstitute.com — free courses","https://corporatefinanceinstitute.com/resources/"]]}
       ]}
     ]
   }
